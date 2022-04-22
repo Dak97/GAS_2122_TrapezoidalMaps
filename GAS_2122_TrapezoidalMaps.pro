@@ -41,8 +41,11 @@ DISTFILES += \
 
 SOURCES +=  \
     data_structures/segment_intersection_checker.cpp \
+    data_structures/trapezoid.cpp \
     data_structures/trapezoidalmap_dataset.cpp \
+    data_structures/trapmap.cpp \
     drawables/drawable_trapezoidalmap_dataset.cpp \
+    drawables/drawabletrapmap.cpp \
     main.cpp \
     managers/trapezoidalmap_manager.cpp \
     utils/fileutils.cpp
@@ -52,8 +55,11 @@ FORMS += \
 
 HEADERS += \
     data_structures/segment_intersection_checker.h \
+    data_structures/trapezoid.h \
     data_structures/trapezoidalmap_dataset.h \
+    data_structures/trapmap.h \
     drawables/drawable_trapezoidalmap_dataset.h \
+    drawables/drawabletrapmap.h \
     managers/trapezoidalmap_manager.h \
     utils/fileutils.h
 

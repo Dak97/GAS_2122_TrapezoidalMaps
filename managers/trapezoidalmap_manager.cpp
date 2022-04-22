@@ -36,7 +36,8 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
                 cg3::Point2d(BOUNDINGBOX, BOUNDINGBOX)),
     firstPointSelectedColor(220, 80, 80),
     firstPointSelectedSize(5),
-    isFirstPointSelected(false)
+    isFirstPointSelected(false),
+    drawableTrapMap(BOUNDINGBOX)
 {
     //NOTE 1: you probably need to initialize some objects in the constructor. You
     //can see how to initialize an attribute in the lines above. This is C++ style
@@ -65,6 +66,7 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
     mainWindow.pushDrawableObject(&drawableBoundingBox, "Bounding box");
     mainWindow.pushDrawableObject(&drawableTrapezoidalMapDataset, "Segments");
 
+    mainWindow.pushDrawableObject(&drawableTrapMap, "TrapMap");
 
 
     //---------------------------------------------------------------------
@@ -105,6 +107,9 @@ TrapezoidalMapManager::~TrapezoidalMapManager()
     //Delete the drawable objects
     mainWindow.deleteDrawableObject(&drawableBoundingBox);
     mainWindow.deleteDrawableObject(&drawableTrapezoidalMapDataset);
+
+    mainWindow.deleteDrawableObject(&drawableTrapMap);
+
     if (isFirstPointSelected) {
         mainWindow.deleteDrawableObject(&firstPointSelected);
     }
@@ -162,6 +167,7 @@ TrapezoidalMapManager::~TrapezoidalMapManager()
 void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& segment)
 {
 
+    drawableTrapMap.addFourTrapezoids(segment);
 
     //---------------------------------------------------------------------
     //Execute the incremental step to add a segment to your output TrapezoidalMap data
