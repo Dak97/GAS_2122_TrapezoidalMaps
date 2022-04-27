@@ -8,43 +8,71 @@ TrapMap::TrapMap(double boundingBox) :
 
 
 }
-const Trapezoid TrapMap::getTrapezoid2() const{
-    return trapezoid2;
+
+
+
+const std::vector<Trapezoid> TrapMap::getTrapezoids() const{
+    return trapezoids;
 }
 
-const Trapezoid TrapMap::getTrapezoid1() const{
-    return trapezoid1;
+void TrapMap::clear(){
+    trapezoids.clear();
 }
 
 void TrapMap::addFourTrapezoids(const cg3::Segment2d &segment){
-    //creo il trapezoide centrale-alto
-     trapezoid2.setSegmentDown(segment); // base del trapezoide
 
-     cg3::Point2d s = cg3::Point2d(segment.p1().x(), boundingBox);
-     cg3::Point2d t = cg3::Point2d(segment.p2().x(), boundingBox);
-     cg3::Segment2d top = cg3::Segment2d(s, t);
-     trapezoid2.setSegmentUp(top);
-
-     trapezoid2.setSegmentLeft(cg3::Segment2d(segment.p1(), s));
-
-     trapezoid2.setSegmentRight(cg3::Segment2d(segment.p2(),t));
-
-     ///////////
-     //left most bottom
-     cg3::Point2d lmb = cg3::Point2d(-boundingBox,-boundingBox);
-     cg3::Point2d m = cg3::Point2d(segment.p1().x(),-boundingBox);
-     trapezoid1.setSegmentDown(cg3::Segment2d(lmb, m));
-
-     cg3::Point2d lmt = cg3::Point2d(-boundingBox, boundingBox);
-     trapezoid1.setSegmentUp(cg3::Segment2d(lmt, s));
-
-     trapezoid1.setSegmentLeft(cg3::Segment2d(lmb, lmt));
-
-     trapezoid1.setSegmentRight(cg3::Segment2d(m, s));
+    cg3::Segment2d topS, bottomS;
+    cg3::Color colorT;
 
 
+    // left trapezoid
 
+    topS = cg3::Segment2d(cg3::Point2d(-boundingBox,boundingBox),
+                         cg3::Point2d(segment.p1().x(),boundingBox));
 
+    bottomS = cg3::Segment2d(cg3::Point2d(-boundingBox,-boundingBox),
+                           cg3::Point2d(segment.p1().x(),-boundingBox));
+
+    colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+    Trapezoid left = Trapezoid(topS, bottomS, colorT);
+
+    // top trapezoid
+
+    topS = cg3::Segment2d(cg3::Point2d(segment.p1().x(), boundingBox),
+                          cg3::Point2d(segment.p2().x(), boundingBox));
+
+    bottomS = segment;
+
+    colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+
+    Trapezoid top = Trapezoid(topS, bottomS, colorT);
+
+    // bottom trapezoid
+
+    topS = segment;
+
+    bottomS = cg3::Segment2d(cg3::Point2d(segment.p1().x(), -boundingBox),
+                             cg3::Point2d(segment.p2().x(), -boundingBox));;
+
+    colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+    Trapezoid bottom = Trapezoid(topS, bottomS, colorT);
+
+//     right trapezoid
+
+    topS = cg3::Segment2d(cg3::Point2d(segment.p2().x(),boundingBox),
+                          cg3::Point2d(boundingBox,boundingBox));
+
+    bottomS = cg3::Segment2d(cg3::Point2d(segment.p2().x(),-boundingBox),
+                             cg3::Point2d(boundingBox,-boundingBox));
+    colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+
+    Trapezoid right = Trapezoid(topS, bottomS, colorT);
+
+    // add new trapezoids
+    trapezoids.push_back(left);
+    trapezoids.push_back(top);
+    trapezoids.push_back(bottom);
+    trapezoids.push_back(right);
 
 
 

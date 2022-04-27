@@ -4,6 +4,7 @@
 #include <cg3/geometry/segment2.h>
 #include <cg3/geometry/point2.h>
 #include "data_structures/trapezoid.h"
+#include <cg3/utilities/color.h>
 class TrapMap
 {
 public:
@@ -13,13 +14,16 @@ public:
     const Trapezoid getTrapezoid2() const;
     const Trapezoid getTrapezoid1() const;
 
+    // restituisco una lista di trapezoidi
+    const std::vector<Trapezoid> getTrapezoids() const;
+
+    void clear();
+
 private:
     const double boundingBox;
-    // memorizzo solo un trapezoide per il momento
-    Trapezoid trapezoid1;
-    Trapezoid trapezoid2;
-    Trapezoid trapezoid3;
-    Trapezoid trapezoid4;
+
+    // vettore di trapezoidi
+    std::vector<Trapezoid> trapezoids;
 
 
 

@@ -272,7 +272,8 @@ void TrapezoidalMapManager::queryTrapezoidalMap(const cg3::Point2d& queryPoint)
 /**
  * @brief Clear data of the trapezoidal map
  */
-void TrapezoidalMapManager::clearTrapezoidalMap()
+void TrapezoidalMapManager::
+clearTrapezoidalMap()
 {
     //---------------------------------------------------------------------
     //Clear here your trapezoidal map data structure.
@@ -632,6 +633,7 @@ void TrapezoidalMapManager::on_clearSegmentsButton_clicked() //Do not write code
     //Clear current data
     clearTrapezoidalMap();
     drawableTrapezoidalMapDataset.clear();
+//    drawableTrapMap.clear();
 
     updateCanvas();
 

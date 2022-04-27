@@ -2,9 +2,11 @@
 
 Trapezoid::Trapezoid(){}
 
-Trapezoid::Trapezoid(const cg3::Segment2d &segmentUp, const cg3::Segment2d &segmentDown) :
+Trapezoid::Trapezoid(const cg3::Segment2d &segmentUp, const cg3::Segment2d &segmentDown,
+                     const cg3::Color color) :
     segmentUp(segmentUp),
-    segmentDown(segmentDown)
+    segmentDown(segmentDown),
+    color(color)
 {
 
 }
@@ -47,4 +49,14 @@ const cg3::Segment2d &Trapezoid::getSegmentRight() const
 void Trapezoid::setSegmentRight(const cg3::Segment2d &newSegmentRight)
 {
     segmentRight = newSegmentRight;
+}
+
+const cg3::Color &Trapezoid::getColor() const
+{
+    return color;
+}
+
+void Trapezoid::setColor(const cg3::Color &newColor)
+{
+    color = newColor;
 }

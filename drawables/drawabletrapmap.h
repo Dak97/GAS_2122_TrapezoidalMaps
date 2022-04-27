@@ -22,6 +22,7 @@ public:
     cg3::Point3d sceneCenter() const;
     double sceneRadius() const;
 
+    const double bb;
 
 
 };
