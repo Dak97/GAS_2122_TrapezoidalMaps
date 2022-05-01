@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 7.0.0, 2022-04-27T14:01:19. -->
+<!-- Written by QtCreator 7.0.0, 2022-05-01T23:41:11. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -246,6 +246,7 @@
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/home/daki/Desktop/Final Project/build-GAS_2122_TrapezoidalMaps-QT_5_12_8-Debug</value>
    </valuemap>
    <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>

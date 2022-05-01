@@ -5,11 +5,14 @@
 
 #include <cg3/utilities/color.h>
 
+#define BB 1e+6
+
 class Trapezoid {
 
 public:
     Trapezoid();
-    Trapezoid(const cg3::Segment2d &segmentUp, const cg3::Segment2d &segmentDown,
+    Trapezoid(int id, cg3::Segment2d &segmentUp, cg3::Segment2d &segmentDown,
+              cg3::Point2d& leftP, cg3::Point2d& rightP,
               const cg3::Color color);
 
     // setter e getter del segmento alto del trapezoide
@@ -20,21 +23,27 @@ public:
     const cg3::Segment2d &getSegmentDown() const;
     void setSegmentDown(const cg3::Segment2d &newSegmentDown);
 
-    // setter e getter del segmento inserito
-    const cg3::Segment2d &getSegmentLeft() const;
-    void setSegmentLeft(const cg3::Segment2d &newSegmentLeft);
+    cg3::Point2d getLeftPoint() const;
+    void setLeftPoint(cg3::Point2d newLeftPoint);
 
-    const cg3::Segment2d &getSegmentRight() const;
-    void setSegmentRight(const cg3::Segment2d &newSegmentRight);
+    cg3::Point2d getRightPoint() const;
+    void setRightPoint(cg3::Point2d newRightPoint);
 
     const cg3::Color &getColor() const;
     void setColor(const cg3::Color &newColor);
 
+    int getId() const;
+    void setId(int newId);
+
 private:
+    int id;
+
     cg3::Segment2d segmentUp;
     cg3::Segment2d segmentDown;
-    cg3::Segment2d segmentLeft;
-    cg3::Segment2d segmentRight;
+    cg3::Point2d leftPoint;
+    cg3::Point2d rightPoint;
+
+
 
     cg3::Color color;
 

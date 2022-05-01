@@ -37,7 +37,8 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
     firstPointSelectedColor(220, 80, 80),
     firstPointSelectedSize(5),
     isFirstPointSelected(false),
-    drawableTrapMap(BOUNDINGBOX)
+    drawableTrapMap(BOUNDINGBOX),
+    dag(drawableTrapMap, &drawableTrapMap.getTrapezoidWithId(0))
 {
     //NOTE 1: you probably need to initialize some objects in the constructor. You
     //can see how to initialize an attribute in the lines above. This is C++ style
@@ -85,7 +86,11 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
 
 
 
+    Trapezoid* a = (Trapezoid*)dag.getRoot()->getData().objj;
 
+    std::cout << "Id del trap " << drawableTrapMap.getTrapezoids().at(0).getId() << std::endl;
+    std::cout << "Id del trap " << a->getId() << std::endl;
+    std::cout << "Id del trap " << drawableTrapMap.getTrapezoids().size() << std::endl;
     //#####################################################################
 
 
@@ -167,7 +172,7 @@ TrapezoidalMapManager::~TrapezoidalMapManager()
 void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& segment)
 {
 
-    drawableTrapMap.addFourTrapezoids(segment);
+
 
     //---------------------------------------------------------------------
     //Execute the incremental step to add a segment to your output TrapezoidalMap data
@@ -201,6 +206,7 @@ void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& seg
     //structures, you could save directly the point (Point2d) in each trapezoid (it is fine).
 
 
+    algoritms::buildTrapMapDag(dag, drawableTrapMap, segment);
 
 
     //#####################################################################

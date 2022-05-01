@@ -8,24 +8,25 @@
 class TrapMap
 {
 public:
-    TrapMap(double boundingBox);
+    TrapMap();
 
-    void addFourTrapezoids(const cg3::Segment2d &segment);
-    const Trapezoid getTrapezoid2() const;
-    const Trapezoid getTrapezoid1() const;
+    std::vector<Trapezoid> addFourTrapezoids(const cg3::Segment2d &segment, Trapezoid bb);
 
     // restituisco una lista di trapezoidi
     const std::vector<Trapezoid> getTrapezoids() const;
+    Trapezoid& getTrapezoidWithId(const int id);
+    void deleteTrapezoidWithId(const int id);
 
     void clear();
 
 private:
-    const double boundingBox;
 
+    Trapezoid boundingBox;
     // vettore di trapezoidi
     std::vector<Trapezoid> trapezoids;
 
 
+    cg3::Point2d findIntersectionVerticalLine(const cg3::Segment2d& s, const cg3::Point2d& px);
 
 
 };

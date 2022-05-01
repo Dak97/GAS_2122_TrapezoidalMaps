@@ -1,12 +1,24 @@
 #include "trapezoid.h"
 
-Trapezoid::Trapezoid(){}
+Trapezoid::Trapezoid(){
+    segmentUp = cg3::Segment2d(cg3::Point2d(-BB,BB),cg3::Point2d(BB,BB));
+    segmentDown = cg3::Segment2d(cg3::Point2d(-BB,-BB),cg3::Point2d(BB,-BB));
+    leftPoint = cg3::Point2d(-BB,BB);
+    rightPoint = cg3::Point2d(BB,BB);
+    color = cg3::Color(255,255,255);
+    id = 0;
+}
 
-Trapezoid::Trapezoid(const cg3::Segment2d &segmentUp, const cg3::Segment2d &segmentDown,
+Trapezoid::Trapezoid(int id, cg3::Segment2d &segmentUp, cg3::Segment2d &segmentDown,
+                     cg3::Point2d& leftP, cg3::Point2d& rightP,
                      const cg3::Color color) :
+    id(id),
     segmentUp(segmentUp),
     segmentDown(segmentDown),
+    leftPoint(leftP),
+    rightPoint(rightP),
     color(color)
+
 {
 
 }
@@ -31,24 +43,24 @@ void Trapezoid::setSegmentDown(const cg3::Segment2d &newSegmentDown)
     segmentDown = newSegmentDown;
 }
 
-const cg3::Segment2d &Trapezoid::getSegmentLeft() const
+cg3::Point2d Trapezoid::getLeftPoint() const
 {
-    return segmentLeft;
+    return leftPoint;
 }
 
-void Trapezoid::setSegmentLeft(const cg3::Segment2d &newSegmentLeft)
+void Trapezoid::setLeftPoint(cg3::Point2d newLeftPoint)
 {
-    segmentLeft = newSegmentLeft;
+    leftPoint = newLeftPoint;
 }
 
-const cg3::Segment2d &Trapezoid::getSegmentRight() const
+cg3::Point2d Trapezoid::getRightPoint() const
 {
-    return segmentRight;
+    return rightPoint;
 }
 
-void Trapezoid::setSegmentRight(const cg3::Segment2d &newSegmentRight)
+void Trapezoid::setRightPoint(cg3::Point2d newRightPoint)
 {
-    segmentRight = newSegmentRight;
+    rightPoint = newRightPoint;
 }
 
 const cg3::Color &Trapezoid::getColor() const
@@ -59,4 +71,14 @@ const cg3::Color &Trapezoid::getColor() const
 void Trapezoid::setColor(const cg3::Color &newColor)
 {
     color = newColor;
+}
+
+int Trapezoid::getId() const
+{
+    return id;
+}
+
+void Trapezoid::setId(int newId)
+{
+    id = newId;
 }
