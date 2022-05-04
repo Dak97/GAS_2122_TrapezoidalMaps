@@ -38,7 +38,7 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
     firstPointSelectedSize(5),
     isFirstPointSelected(false),
     drawableTrapMap(BOUNDINGBOX),
-    dag(drawableTrapMap, &drawableTrapMap.getTrapezoidWithId(0))
+    dag(drawableTrapMap, drawableTrapMap.getTrapezoidWithId(0))
 {
     //NOTE 1: you probably need to initialize some objects in the constructor. You
     //can see how to initialize an attribute in the lines above. This is C++ style
@@ -88,7 +88,7 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
 
     Trapezoid* a = (Trapezoid*)dag.getRoot()->getData().objj;
 
-    std::cout << "Id del trap " << drawableTrapMap.getTrapezoids().at(0).getId() << std::endl;
+//    std::cout << "Id del trap " << drawableTrapMap.getTrapezoids().at(0).getId() << std::endl;
     std::cout << "Id del trap " << a->getId() << std::endl;
     std::cout << "Id del trap " << drawableTrapMap.getTrapezoids().size() << std::endl;
     //#####################################################################

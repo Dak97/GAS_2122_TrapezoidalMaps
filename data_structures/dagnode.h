@@ -15,9 +15,10 @@ public:
     }DagData;
 
     DagNode(DagNode::TypeNode type, void *objj);
-
+    ~DagNode();
     const DagData &getData() const;
     void setData(const DagData &newData);
+    void setObject(void* obj);
 
     DagNode *left; // punta al figlio sinistro
     DagNode *right; // punta al figlio destro

@@ -10,10 +10,10 @@ class DAG
 public:
     DAG(DrawableTrapMap& drawableTrapMap, Trapezoid *bb);
 
-    void updateDag(std::vector<Trapezoid> traps, std::vector<DagNode*> trapNodes, const cg3::Segment2d& segment);
+    void updateDag(std::vector<Trapezoid*> traps, DagNode* trapNode, const cg3::Segment2d& segment);
     DagNode* findTrapToModify(const cg3::Segment2d& segment);
     DagNode* createNewDagNode(DagNode::TypeNode typeObj, void *object);
-    std::vector<DagNode*> query(const cg3::Segment2d segment);
+    DagNode* query(const cg3::Segment2d segment);
 
     DagNode* getRoot() const;
 

@@ -10,17 +10,16 @@ DrawableTrapMap::DrawableTrapMap(double boundingBox) :
 
 void DrawableTrapMap::draw() const
 {
-
     for (const Trapezoid& t : getTrapezoids()) {
+            cg3::opengl::drawQuad2(
+                        t.getSegmentUp().p1(),
+                        t.getSegmentUp().p2(),
+                        t.getSegmentDown().p2(),
+                        t.getSegmentDown().p1(),
+                        t.getColor(),
+                        1, true
+                        );
 
-        cg3::opengl::drawQuad2(
-                    t.getSegmentUp().p1(),
-                    t.getSegmentUp().p2(),
-                    t.getSegmentDown().p2(),
-                    t.getSegmentDown().p1(),
-                    t.getColor(),
-                    1, true
-                    );
     }
 //if (getTrapezoids().size() > 0){
 

@@ -7,26 +7,30 @@ TrapMap::TrapMap() : boundingBox(Trapezoid())
     trapezoids.push_back(boundingBox);
 }
 
-const std::vector<Trapezoid> TrapMap::getTrapezoids() const{
+const std::list<Trapezoid> TrapMap::getTrapezoids() const{
     return trapezoids;
 }
-Trapezoid& TrapMap::getTrapezoidWithId(const int id){
-    return trapezoids.at(id);
+
+//const std::list<bool> TrapMap::getDeletedTrapezoids() const{
+//    return deletedTrapezoids;
+//}
+
+Trapezoid* TrapMap::getTrapezoidWithId(const int id){
+
+        for (std::list<Trapezoid>::iterator it=trapezoids.begin(); it != trapezoids.end(); ++it){
+            if((*it).getId() == id) return &*it;
+        }
 }
 
 void TrapMap::deleteTrapezoidWithId(const int id){
-   if (trapezoids.size() == 1) {
-       trapezoids.pop_back();
-       return;
-   }
-
-   for (size_t i=0; i <= trapezoids.size() - 1; i++){
-       if (trapezoids[i].getId() == id){
-           trapezoids.erase(trapezoids.begin() + i);
-           return;
-       }
-   }
+    for (std::list<Trapezoid>::iterator i=trapezoids.begin(); i!=trapezoids.end(); i++){
+        if ((*i).getId() == id){
+            trapezoids.erase(i);
+            return;
+        }
+    }
 }
+
 void TrapMap::clear(){
     trapezoids.clear();
 }
@@ -49,12 +53,14 @@ cg3::Point2d TrapMap::findIntersectionVerticalLine(const cg3::Segment2d& s, cons
     return cg3::Point2d(px.x(), y);
 }
 
-std::vector<Trapezoid> TrapMap::addFourTrapezoids(const cg3::Segment2d &segment, Trapezoid bb){
+std::vector<Trapezoid*> TrapMap::addFourTrapezoids(const cg3::Segment2d &segment,  DagNode* bbNode){
 
     cg3::Segment2d topS, bottomS;
     cg3::Point2d leftP, rightP;
     cg3::Color colorT;
-    std::vector<Trapezoid> trapForDag;
+
+    std::vector<Trapezoid*> trapForDag;
+    Trapezoid bb = *(Trapezoid*)bbNode->getData().objj;
 
     int idLastTrap = trapezoids.back().getId();
 
@@ -117,7 +123,7 @@ std::vector<Trapezoid> TrapMap::addFourTrapezoids(const cg3::Segment2d &segment,
     Trapezoid right = Trapezoid(++idLastTrap, topS, bottomS, leftP, rightP, colorT);
 
     // elimino il trapezoide che é il bb
-    deleteTrapezoidWithId(bb.getId());
+    //deleteTrapezoidWithId(bb.getId());
 
     // add new trapezoids
     trapezoids.push_back(left);
@@ -125,10 +131,10 @@ std::vector<Trapezoid> TrapMap::addFourTrapezoids(const cg3::Segment2d &segment,
     trapezoids.push_back(bottom);
     trapezoids.push_back(right);
 
-    trapForDag.push_back(left);
-    trapForDag.push_back(top);
-    trapForDag.push_back(bottom);
-    trapForDag.push_back(right);
+    trapForDag.push_back(getTrapezoidWithId(left.getId()));
+    trapForDag.push_back(getTrapezoidWithId(top.getId()));
+    trapForDag.push_back(getTrapezoidWithId(bottom.getId()));
+    trapForDag.push_back(getTrapezoidWithId(right.getId()));
 
     return trapForDag;
 }

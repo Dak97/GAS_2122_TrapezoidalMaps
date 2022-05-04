@@ -26,10 +26,8 @@ DagNode* DAG::findTrapToModify(const cg3::Segment2d& segment){
     CG3_SUPPRESS_WARNING(segment);
 }
 
-std::vector<DagNode*> DAG::query(const cg3::Segment2d segment){
-    std::cout << "Sono dentro la query" << std::endl;
+DagNode* DAG::query(const cg3::Segment2d segment){
     DagNode* tmp = root;
-    std::vector<DagNode*> result;
     bool isFirstPoint = true;
     cg3::Point2d queryPoint = segment.p1();
 
@@ -38,16 +36,7 @@ std::vector<DagNode*> DAG::query(const cg3::Segment2d segment){
 
         // nodo trapezoide
         if (tmp->getData().type == DagNode::TypeNode::Trapezoid){
-            if (isFirstPoint){
-                //queryPoint = segment.p2();
-                isFirstPoint = false;
-                result.push_back(tmp); // insierisco il nodo nel vettore
-                //tmp = root;
-                // saltare i controlli e riniziare subito il lool
-                continue;
-            }
-
-            //result.push_back(tmp);
+                return tmp;
         }
 
         // punto sinistro
@@ -98,7 +87,7 @@ std::vector<DagNode*> DAG::query(const cg3::Segment2d segment){
     //result.pop_back();
     // DA MODIFICARE - NON VA BENE
 
-    return result;
+
 }
 
 bool DAG::pointIsAbove(cg3::Segment2d *s, cg3::Point2d p){
@@ -122,18 +111,16 @@ bool DAG::pointIsAbove(cg3::Segment2d *s, cg3::Point2d p){
         return false;
     }
 }
-void DAG::updateDag(std::vector<Trapezoid> traps, std::vector<DagNode*> trapNodes, const cg3::Segment2d& segment){
+void DAG::updateDag(std::vector<Trapezoid*> traps, DagNode* trapNode, const cg3::Segment2d& segment){
     cg3::Point2d p1 = segment.p1();
     cg3::Point2d q1 = segment.p2();
 
-    // per il momento ho solo un trapezoide
-    DagNode *trapToDelete = trapNodes.back();
     DagNode *tmp;
 
 
     tmp = new DagNode(DagNode::TypeNode::Left, new cg3::Point2d(segment.p1().x(),segment.p1().y())); // inserisco il punto p1
 
-    tmp->left = new DagNode(DagNode::TypeNode::Trapezoid, &traps.at(0)); // inserisco il trapezoide A
+    tmp->left = new DagNode(DagNode::TypeNode::Trapezoid, traps.at(0)); // inserisco il trapezoide A
     tmp->left->parent = tmp;
 
     tmp->right = new DagNode(DagNode::TypeNode::Right, new cg3::Point2d(segment.p2().x(),segment.p2().y())); // inserisco il punto q1
@@ -141,28 +128,31 @@ void DAG::updateDag(std::vector<Trapezoid> traps, std::vector<DagNode*> trapNode
     if (root->getData().type == DagNode::TypeNode::Trapezoid){
         root = tmp;
     }else{
-        trapToDelete->parent->left = tmp;
-        trapToDelete->parent = nullptr;
+        if (trapNode->parent->left == trapNode)
+            trapNode->parent->left = tmp;
+        else
+            trapNode->parent->right = tmp;
 
+        trapNode->parent = nullptr;
     }
 
     tmp = tmp->right; // mi sposto a destra
 
     tmp->left = new DagNode(DagNode::TypeNode::Segment, new cg3::Segment2d(p1,q1)); // inserisco il segmento s1
 
-    tmp->right = new DagNode(DagNode::TypeNode::Trapezoid, &traps.at(3)); // inserisco il trapezoide D
+    tmp->right = new DagNode(DagNode::TypeNode::Trapezoid, traps.at(3)); // inserisco il trapezoide D
     tmp->right->parent = tmp;
 
     tmp = tmp->left;
 
-    tmp->left = new DagNode(DagNode::TypeNode::Trapezoid, &traps.at(1)); // inserisco il trapezoide B
+    tmp->left = new DagNode(DagNode::TypeNode::Trapezoid, traps.at(1)); // inserisco il trapezoide B
     tmp->left->parent = tmp;
 
-    tmp->right = new DagNode(DagNode::TypeNode::Trapezoid, &traps.at(2)); // inserisco il trapezoide C
+    tmp->right = new DagNode(DagNode::TypeNode::Trapezoid, traps.at(2)); // inserisco il trapezoide C
     tmp->right->parent = tmp;
 
     // dealloco la memoria del nodo da sostituire
-    delete trapToDelete;
+    delete trapNode;
 
 }
 
