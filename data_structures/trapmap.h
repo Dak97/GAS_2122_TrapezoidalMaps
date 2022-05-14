@@ -12,6 +12,7 @@ public:
     TrapMap();
 
     std::vector<Trapezoid*> addFourTrapezoids(const cg3::Segment2d &segment, DagNode* bbNode, bool &leftToRight);
+    std::vector<Trapezoid*> newTrapezoids(const cg3::Segment2d &segment,  std::vector<Trapezoid*> &traps, bool &leftToRight);
 
     // restituisco una lista di trapezoidi
     const std::list<Trapezoid> getTrapezoids() const;
@@ -32,8 +33,8 @@ private:
     std::list<Trapezoid> trapezoids;
 
 
-    cg3::Point2d findIntersectionVerticalLine(const cg3::Segment2d& s, const cg3::Point2d& px, bool dir);
-
+    cg3::Point2d findIntersectionVerticalLine(const cg3::Segment2d& s, const cg3::Point2d& px);
+    void updateNeigh(Trapezoid *a, Trapezoid *b, const cg3::Segment2d& s);
 
 };
 

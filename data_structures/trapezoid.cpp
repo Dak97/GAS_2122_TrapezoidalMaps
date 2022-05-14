@@ -7,16 +7,37 @@ Trapezoid::Trapezoid(){
     rightPoint = cg3::Point2d(BB,BB);
     color = cg3::Color(255,255,255);
     id = 0;
+    upperLeftNeigh = nullptr;
+    bottomLeftNeigh = nullptr;
+    upperRightNeigh = nullptr;
+    bottomRightNeigh = nullptr;
 }
 
+Trapezoid::Trapezoid(int id, cg3::Segment2d segmentUp, cg3::Segment2d segmentDown,
+                     cg3::Point2d leftP, cg3::Point2d rightP, const cg3::Color color) :
+    id(id),
+    segmentUp(segmentUp),
+    segmentDown(segmentDown),
+    leftPoint(leftP),
+    rightPoint(rightP),
+    color(color)
+
+{
+
+}
 Trapezoid::Trapezoid(int id, cg3::Segment2d &segmentUp, cg3::Segment2d &segmentDown,
-                     cg3::Point2d& leftP, cg3::Point2d& rightP,
+                     cg3::Point2d& leftP, cg3::Point2d& rightP, Trapezoid* upperLeftN,
+                     Trapezoid* bottomLeftN, Trapezoid* upperRightN, Trapezoid* bottomRightN,
                      const cg3::Color color) :
     id(id),
     segmentUp(segmentUp),
     segmentDown(segmentDown),
     leftPoint(leftP),
     rightPoint(rightP),
+    upperLeftNeigh(upperLeftN),
+    bottomLeftNeigh(bottomLeftN),
+    upperRightNeigh(upperRightN),
+    bottomRightNeigh(bottomRightN),
     color(color)
 
 {
@@ -81,4 +102,53 @@ int Trapezoid::getId() const
 void Trapezoid::setId(int newId)
 {
     id = newId;
+}
+
+Trapezoid *Trapezoid::getUpperLeftNeigh() const
+{
+    return upperLeftNeigh;
+}
+
+void Trapezoid::setUpperLeftNeigh(Trapezoid *newUpperLeftNeigh)
+{
+    upperLeftNeigh = newUpperLeftNeigh;
+}
+
+Trapezoid *Trapezoid::getBottomLeftNeigh() const
+{
+    return bottomLeftNeigh;
+}
+
+void Trapezoid::setBottomLeftNeigh(Trapezoid *newBottomLeftNeigh)
+{
+    bottomLeftNeigh = newBottomLeftNeigh;
+}
+
+Trapezoid *Trapezoid::getUpperRightNeigh() const
+{
+    return upperRightNeigh;
+}
+
+void Trapezoid::setUpperRightNeigh(Trapezoid *newUpperRightNeigh)
+{
+    upperRightNeigh = newUpperRightNeigh;
+}
+
+Trapezoid *Trapezoid::getBottomRightNeigh() const
+{
+    return bottomRightNeigh;
+}
+
+void Trapezoid::setBottomRightNeigh(Trapezoid *newBottomRightNeigh)
+{
+    bottomRightNeigh = newBottomRightNeigh;
+}
+
+void Trapezoid::setNeighbor(Trapezoid *newUpperLeftNeigh, Trapezoid *newBottomLeftNeigh,
+                            Trapezoid *newUpperRightNeigh, Trapezoid *newBottomRightNeigh)
+{
+    upperLeftNeigh = newUpperLeftNeigh;
+    bottomLeftNeigh = newBottomLeftNeigh;
+    upperRightNeigh = newUpperRightNeigh;
+    bottomRightNeigh = newBottomRightNeigh;
 }

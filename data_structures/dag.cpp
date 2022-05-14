@@ -18,69 +18,102 @@ DagNode* DAG::createNewDagNode(DagNode::TypeNode typeObj, void *object){
     DagNode *newNode = new DagNode(typeObj, object);
     return newNode;
 }
-DagNode* DAG::findTrapToModify(const cg3::Segment2d& segment){
-    // se la root contiene un trapezoide sicuramente é il bb
-    // lo restituisco per la modifica
-    if (root->getData().type == DagNode::TypeNode::Trapezoid) return root;
 
-    CG3_SUPPRESS_WARNING(segment);
+std::vector<Trapezoid*> DAG::followSegment(const cg3::Segment2d &segment, DagNode* trap){
+    Trapezoid t = *(Trapezoid*)trap->getData().objj;
+    cg3::Segment2d s = segment;
+    std::vector<Trapezoid*> trapezoids;
+    trapezoids.push_back((Trapezoid*)trap->getData().objj);
+    // se il punto q1 si trova a destra del right point del trapezoide
+
+    while (segment.p2().x() > t.getRightPoint().x()) {
+
+        // se il right point si trova sopra il segmento
+        if (pointIsAbove(&s, t.getRightPoint())){
+            // prendo il bottom right neighbor
+            trapezoids.push_back(t.getBottomRightNeigh());
+            t = *t.getBottomRightNeigh();
+        }else{
+            trapezoids.push_back(t.getUpperRightNeigh());
+            t = *t.getUpperRightNeigh();
+        }
+    }
+
+    return trapezoids;
+
 }
-
-DagNode* DAG::query(const cg3::Segment2d segment){
+std::pair<DagNode*, DagNode*> DAG::query(const cg3::Segment2d segment, bool &leftToRight){
     DagNode* tmp = root;
+    cg3::Point2d *p1, *q1;
+    cg3::Segment2d* s1;
     bool isFirstPoint = true;
-    cg3::Point2d queryPoint = segment.p1();
+    cg3::Point2d queryPoint;
+    std::pair<DagNode*, DagNode*> trapezoids;
 
-    // TODO sostiutire con uno switch case
-    while(isFirstPoint){
+    if (leftToRight)
+        queryPoint = segment.p1();
+    else
+        queryPoint = segment.p2();
 
-        // nodo trapezoide
-        if (tmp->getData().type == DagNode::TypeNode::Trapezoid){
-                return tmp;
+    while(true){
+
+        switch(tmp->getData().type){
+            case DagNode::TypeNode::Trapezoid:
+                if (isFirstPoint){
+                    // inserisco il primo trapezoide nel pair
+                    trapezoids.first = tmp;
+                    tmp = root;
+
+                    if (leftToRight){
+                        queryPoint = segment.p2();
+                    }else
+                        queryPoint = segment.p1();
+
+                    isFirstPoint = false;
+                }else{
+                    trapezoids.second = tmp;
+                    return trapezoids;
+                }
+                break;
+
+            case DagNode::TypeNode::Left:
+                p1 = (cg3::Point2d*)tmp->getData().objj;
+                if ( queryPoint.x() > p1->x()){
+                    // andare a destra
+                    tmp = tmp->right;
+                }else{
+                    //andare a sinistra
+                    tmp = tmp->left;
+                }
+                break;
+
+            case DagNode::TypeNode::Right:
+                q1 = (cg3::Point2d*)tmp->getData().objj;
+                if (queryPoint.x() > q1->x()){
+                    // andare a destra
+                    tmp = tmp->right;
+                }else{
+                    //andare a sinistra
+                    tmp = tmp->left;
+                }
+                break;
+
+            case DagNode::TypeNode::Segment:
+                s1 = (cg3::Segment2d*)tmp->getData().objj;
+
+                if (pointIsAbove(s1,queryPoint)){
+                    //il punto si trova sopra il segmento
+                    tmp = tmp->left;
+                }else{
+                    // il punto si trova sotto il segmento o sul
+                    tmp = tmp->right;
+                }
+                break;
+
+            default:
+                break;
+
         }
-
-        // punto sinistro
-        if (tmp->getData().type == DagNode::TypeNode::Left){
-            cg3::Point2d *p1 = (cg3::Point2d*)tmp->getData().objj;
-            if ( queryPoint.x() > p1->x()){
-                // andare a destra
-                tmp = tmp->right;
-            }else{
-                //andare a sinistra
-                tmp = tmp->left;
-            }
-            continue;
-        }
-
-        // punto destro
-        if (tmp->getData().type == DagNode::TypeNode::Right){
-            cg3::Point2d *q1 = (cg3::Point2d*)tmp->getData().objj;
-            if (queryPoint.x() > q1->x()){
-                // andare a destra
-                tmp = tmp->right;
-            }else{
-                //andare a sinistra
-                tmp = tmp->left;
-            }
-            continue;
-        }
-
-        // segmento
-
-        if (tmp->getData().type == DagNode::TypeNode::Segment){
-
-            cg3::Segment2d* s1 = (cg3::Segment2d*)tmp->getData().objj;
-
-            if (pointIsAbove(s1,queryPoint)){
-                //il punto si trova sopra il segmento
-                tmp = tmp->left;
-            }else{
-                // il punto si trova sotto il segmento o sul
-                tmp = tmp->right;
-            }
-            continue;
-        }
-
     }
 
     // TODO controllare se é presente due volte lo stesso nodo

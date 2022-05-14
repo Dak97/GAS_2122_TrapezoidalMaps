@@ -11,8 +11,13 @@ class Trapezoid {
 
 public:
     Trapezoid();
+
+    Trapezoid(int id, cg3::Segment2d segmentUp, cg3::Segment2d segmentDown,
+                         cg3::Point2d leftP, cg3::Point2d rightP, const cg3::Color color);
+
     Trapezoid(int id, cg3::Segment2d &segmentUp, cg3::Segment2d &segmentDown,
-              cg3::Point2d& leftP, cg3::Point2d& rightP,
+              cg3::Point2d& leftP, cg3::Point2d& rightP, Trapezoid* upperLeftN,
+              Trapezoid* bottomLeftN, Trapezoid* upperRightN, Trapezoid* bottomRightN,
               const cg3::Color color);
 
     // setter e getter del segmento alto del trapezoide
@@ -35,6 +40,21 @@ public:
     int getId() const;
     void setId(int newId);
 
+    Trapezoid *getUpperLeftNeigh() const;
+    void setUpperLeftNeigh(Trapezoid *newUpperLeftNeigh);
+
+    Trapezoid *getBottomLeftNeigh() const;
+    void setBottomLeftNeigh(Trapezoid *newBottomLeftNeigh);
+
+    Trapezoid *getUpperRightNeigh() const;
+    void setUpperRightNeigh(Trapezoid *newUpperRightNeigh);
+
+    Trapezoid *getBottomRightNeigh() const;
+    void setBottomRightNeigh(Trapezoid *newBottomRightNeigh);
+
+    void setNeighbor(Trapezoid *newUpperLeftNeigh, Trapezoid *newBottomLeftNeigh,
+                     Trapezoid *newUpperRightNeigh, Trapezoid *newBottomRightNeigh);
+
 private:
     int id;
 
@@ -43,8 +63,10 @@ private:
     cg3::Point2d leftPoint;
     cg3::Point2d rightPoint;
 
-
-
+    Trapezoid* upperLeftNeigh;
+    Trapezoid* bottomLeftNeigh;
+    Trapezoid* upperRightNeigh;
+    Trapezoid* bottomRightNeigh;
     cg3::Color color;
 
 };

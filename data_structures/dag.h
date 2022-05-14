@@ -11,10 +11,10 @@ public:
     DAG(DrawableTrapMap& drawableTrapMap, Trapezoid *bb);
 
     void updateDag(std::vector<Trapezoid*> traps, DagNode* trapNode, const cg3::Segment2d& segment);
-    DagNode* findTrapToModify(const cg3::Segment2d& segment);
+//    DagNode* findTrapToModify(const cg3::Segment2d& segment);
     DagNode* createNewDagNode(DagNode::TypeNode typeObj, void *object);
-    DagNode* query(const cg3::Segment2d segment);
-
+    std::pair<DagNode*, DagNode*> query(const cg3::Segment2d segment, bool &leftToRight);
+    std::vector<Trapezoid*> followSegment(const cg3::Segment2d &segment, DagNode* trap);
     DagNode* getRoot() const;
 
 private:
