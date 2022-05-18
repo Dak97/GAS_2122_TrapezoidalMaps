@@ -1,6 +1,7 @@
 #include "trapmap.h"
 
 #include <cg3/viewer/opengl_objects/opengl_objects2.h>
+#include "algorithm.h"
 
 TrapMap::TrapMap() : boundingBox(Trapezoid())
 {
@@ -60,13 +61,24 @@ cg3::Point2d TrapMap::findIntersectionVerticalLine(const cg3::Segment2d& s, cons
     return cg3::Point2d(px.x(), y);
 }
 
+//bool TrapMap::pointIsAboveSegment(cg3::Segment2d segment, cg3::Point2d point){
+
+//    cg3::Point2d v1 = cg3::Point2d(segment.p2().x()-segment.p1().x(),segment.p2().y()-segment.p1().y());
+//    cg3::Point2d v2 = cg3::Point2d(point.x()-segment.p1().x(),point.y()-segment.p1().y());
+//    double cross_product = v1.x() * v2.y() - v1.y() * v2.x();
+
+//    if (cross_product > 0){
+//        //il punto si trova sopra il segmento
+//        return true;
+//    }else{
+//        // il punto si trova sotto il segmento o sul
+//        return false;
+//    }
+//}
 void TrapMap::updateNeigh(Trapezoid *a, Trapezoid *b, const cg3::Segment2d& s){
     cg3::Point2d p = a->getRightPoint();
-    cg3::Point2d v1 = cg3::Point2d(s.p2().x()-s.p1().x(),s.p2().y()-s.p1().y());
-    cg3::Point2d v2 = cg3::Point2d(p.x()-s.p1().x(),p.y()-s.p1().y());
-    double cross_product = v1.x() * v2.y() - v1.y() * v2.x();
 
-    if (cross_product > 0){
+    if (Algorithm::pointIsAboveSegment(s, p)){
         //il punto si trova sopra il segmento
         if (p.x() < s.p1().x()){
             a->setBottomRightNeigh(b);
@@ -126,7 +138,7 @@ std::vector<Trapezoid*> TrapMap::addFourTrapezoids(const cg3::Segment2d &segment
         bottomS = cg3::Segment2d(bb.getSegmentDown().p1(),
                                  findIntersectionVerticalLine(bb.getSegmentDown(), p1));
 
-        leftP = bottomS.p1();
+        leftP = bb.getLeftPoint();
         rightP = p1;
     }
 
@@ -139,7 +151,7 @@ std::vector<Trapezoid*> TrapMap::addFourTrapezoids(const cg3::Segment2d &segment
         bottomS = cg3::Segment2d(bb.getSegmentDown().p1(),
                                findIntersectionVerticalLine(bb.getSegmentDown(), q1));
 
-        leftP = bottomS.p1();
+        leftP = bb.getLeftPoint();
         rightP = q1;
     }
     Trapezoid left = Trapezoid(++idLastTrap, topS, bottomS, leftP, rightP, colorT);
@@ -208,7 +220,7 @@ std::vector<Trapezoid*> TrapMap::addFourTrapezoids(const cg3::Segment2d &segment
                                  bb.getSegmentDown().p2());
 
         leftP = q1;
-        rightP = bottomS.p2();
+        rightP = bb.getRightPoint();
     }
     colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
 
@@ -220,7 +232,7 @@ std::vector<Trapezoid*> TrapMap::addFourTrapezoids(const cg3::Segment2d &segment
                                  bb.getSegmentDown().p2());
 
         leftP = p1;
-        rightP = bottomS.p2();
+        rightP = bb.getRightPoint();
     }
 
     Trapezoid right = Trapezoid(++idLastTrap, topS, bottomS, leftP, rightP, colorT);
@@ -239,10 +251,18 @@ std::vector<Trapezoid*> TrapMap::addFourTrapezoids(const cg3::Segment2d &segment
     Trapezoid *r = getTrapezoidWithId(right.getId());
 
     l->setNeighbor(bb.getUpperLeftNeigh(), bb.getBottomLeftNeigh(), t, b);
-    if (bb.getUpperLeftNeigh() != nullptr){
+    if (bb.getUpperLeftNeigh() != nullptr && bb.getBottomLeftNeigh() != nullptr && (bb.getUpperLeftNeigh()->getId() == bb.getBottomLeftNeigh()->getId())){
+        if (Algorithm::pointIsAboveSegment(segment, bb.getUpperLeftNeigh()->getRightPoint())){
+            bb.getBottomLeftNeigh()->setBottomRightNeigh(l);
+        }
+        else{
+
+            bb.getUpperLeftNeigh()->setUpperRightNeigh(l);
+        }
+    }else if(bb.getUpperLeftNeigh() != nullptr && bb.getBottomLeftNeigh() != nullptr && (bb.getUpperLeftNeigh()->getId() != bb.getBottomLeftNeigh()->getId())){
         bb.getUpperLeftNeigh()->setUpperRightNeigh(l);
-    }
-    if (bb.getBottomLeftNeigh() != nullptr){
+        bb.getUpperLeftNeigh()->setBottomRightNeigh(l);
+        bb.getBottomLeftNeigh()->setUpperRightNeigh(l);
         bb.getBottomLeftNeigh()->setBottomRightNeigh(l);
     }
 
@@ -250,11 +270,16 @@ std::vector<Trapezoid*> TrapMap::addFourTrapezoids(const cg3::Segment2d &segment
     b->setNeighbor(l, l, r, r);
 
     r->setNeighbor(t, b, bb.getUpperRightNeigh(), bb.getBottomRightNeigh());
-
-    if (bb.getUpperRightNeigh() != nullptr){
+    if (bb.getUpperRightNeigh() != nullptr && bb.getBottomRightNeigh() != nullptr && (bb.getUpperRightNeigh()->getId() == bb.getBottomRightNeigh()->getId())){
+        if (Algorithm::pointIsAboveSegment(segment, bb.getUpperLeftNeigh()->getLeftPoint())){
+            bb.getBottomRightNeigh()->setBottomLeftNeigh(r);
+        }else{
+            bb.getUpperRightNeigh()->setUpperLeftNeigh(r);
+        }
+    }else if (bb.getUpperRightNeigh() != nullptr && bb.getBottomRightNeigh() != nullptr && (bb.getUpperRightNeigh()->getId() != bb.getBottomRightNeigh()->getId())){
         bb.getUpperRightNeigh()->setUpperLeftNeigh(r);
-    }
-    if (bb.getBottomRightNeigh() != nullptr){
+        bb.getUpperRightNeigh()->setBottomLeftNeigh(r);
+        bb.getBottomRightNeigh()->setUpperLeftNeigh(r);
         bb.getBottomRightNeigh()->setBottomLeftNeigh(r);
     }
 
@@ -270,8 +295,12 @@ std::vector<Trapezoid*> TrapMap::newTrapezoids(const cg3::Segment2d &segment,  s
     cg3::Point2d p1, q1;
     Trapezoid t, tL;
     cg3::Color colorT;
-    bool twoTraps = false;
-    int i = 1;
+    std::vector<Trapezoid> newTraps;
+    std::vector<Trapezoid*> newTrapsPointer;
+
+    std::vector<Trapezoid> upV, lowV;
+
+
 
     int idLastTrap = trapezoids.back().getId();
 
@@ -283,55 +312,174 @@ std::vector<Trapezoid*> TrapMap::newTrapezoids(const cg3::Segment2d &segment,  s
         p1 = segment.p2();
     }
 
-    if (traps.size() == 2)
-        twoTraps = true;
-
-    t = *traps.at(0);
-    tL = *traps.back();
-
-    colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
-    Trapezoid a = Trapezoid(++idLastTrap,
-                            cg3::Segment2d(t.getSegmentUp().p1(),findIntersectionVerticalLine(t.getSegmentUp(),p1)),
-                            cg3::Segment2d(t.getSegmentDown().p1(),findIntersectionVerticalLine(t.getSegmentDown(),p1)),
-                            t.getLeftPoint(), p1, colorT);
-
-    colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
-    Trapezoid b = Trapezoid(++idLastTrap,
-                                cg3::Segment2d(p1,findIntersectionVerticalLine(segment,t.getRightPoint())),
-                                cg3::Segment2d(a.getSegmentDown().p2(),t.getSegmentDown().p2()),
-                                p1, t.getRightPoint(), colorT);
 
 
+    Trapezoid a, b, c_1, c_n, d, e, up, low;
 
-    colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
-    Trapezoid c = Trapezoid(++idLastTrap,
-                            cg3::Segment2d(a.getSegmentUp().p2(), findIntersectionVerticalLine(tL.getSegmentUp(), q1) ),
-                            cg3::Segment2d(p1,q1),
-                            p1, q1, colorT);
+    for(size_t i = 0; i <= traps.size() -1; i++){
+        // prendo l'i-esimo trapezoide da modificare
+        Trapezoid t = *(traps[i]);
+        if (i == 0){
+            // a
+            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            a = Trapezoid(++idLastTrap,
+                          cg3::Segment2d(t.getSegmentUp().p1(),findIntersectionVerticalLine(t.getSegmentUp(),p1)),
+                          cg3::Segment2d(t.getSegmentDown().p1(),findIntersectionVerticalLine(t.getSegmentDown(),p1)),
+                          t.getLeftPoint(), p1, colorT);
 
-    if (twoTraps){
-        colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
-        Trapezoid d = Trapezoid(++idLastTrap,
-                                cg3::Segment2d(b.getSegmentUp().p2(), q1),
-                                cg3::Segment2d(b.getRightPoint(),findIntersectionVerticalLine(tL.getSegmentDown(),q1)),
-                                b.getRightPoint(), findIntersectionVerticalLine(tL.getSegmentDown(),q1), colorT);
-    }else{
-        t = *traps.at(++i);
-        colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
-        Trapezoid d = Trapezoid(++idLastTrap,
-                                cg3::Segment2d(b.getSegmentUp().p2(), findIntersectionVerticalLine(segment, t.getSegmentDown().p2())),
-                                cg3::Segment2d(t.getSegmentDown().p1(), t.getSegmentDown().p2()),
-                                t.getSegmentDown().p1(), t.getSegmentDown().p2() , colorT);
+            // b
+            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            if (Algorithm::pointIsAboveSegment(segment, t.getRightPoint())){
+                b = Trapezoid(++idLastTrap,
+                              cg3::Segment2d(a.getSegmentUp().p2(), findIntersectionVerticalLine(t.getSegmentUp(),t.getRightPoint())),
+                              cg3::Segment2d(p1,findIntersectionVerticalLine(segment, t.getRightPoint())),
+                              p1, findIntersectionVerticalLine(segment, t.getRightPoint()), colorT);
+
+            }else{
+                b = Trapezoid(++idLastTrap,
+                              cg3::Segment2d(p1,findIntersectionVerticalLine(segment,t.getRightPoint())),
+                              cg3::Segment2d(a.getSegmentDown().p2(),t.getSegmentDown().p2()),
+                              p1, t.getRightPoint(), colorT);
+            }
+
+            // c'
+            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            if (Algorithm::pointIsAboveSegment(segment, t.getRightPoint())){
+                c_1 = Trapezoid(++idLastTrap,
+                                cg3::Segment2d(p1, b.getSegmentDown().p2()),
+                                cg3::Segment2d(a.getSegmentDown().p2(), t.getSegmentDown().p2()),
+                                p1, b.getSegmentDown().p2(), colorT);
+
+                lowV.push_back(c_1);
+            }else{
+                c_1 = Trapezoid(++idLastTrap,
+                                cg3::Segment2d(a.getSegmentUp().p2(), t.getSegmentUp().p2()),
+                                cg3::Segment2d(p1, b.getSegmentUp().p2()),
+                                p1, b.getSegmentUp().p2(), colorT);
+                upV.push_back(c_1);
+            }
+            newTraps.push_back(a);
+            newTraps.push_back(b);
+
+            //newTraps.push_back(c_1);
+
+        }else if (i < traps.size() - 1){
+            // creo i due nuovi trapezoidi
+            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            if (Algorithm::pointIsAboveSegment(segment, t.getLeftPoint())){
+                lowV.back().setSegmentUp(cg3::Segment2d(lowV.back().getSegmentUp().p1(),
+                                                           findIntersectionVerticalLine(segment, t.getRightPoint())));
+
+                lowV.back().setSegmentDown(cg3::Segment2d(lowV.back().getSegmentDown().p1(),
+                                                             findIntersectionVerticalLine(t.getSegmentDown(), t.getRightPoint())));
+
+            }else{
+
+                upV.back().setSegmentUp(cg3::Segment2d(upV.back().getSegmentUp().p1(),
+                                                           findIntersectionVerticalLine(t.getSegmentUp(), t.getRightPoint())));
+                upV.back().setSegmentDown(cg3::Segment2d(upV.back().getSegmentDown().p1(),
+                                                             findIntersectionVerticalLine(segment, t.getRightPoint())));
+
+
+            }
+
+            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            if (Algorithm::pointIsAboveSegment(segment, t.getLeftPoint())){
+                low = Trapezoid(++idLastTrap,
+                                t.getSegmentUp(),
+                                cg3::Segment2d(findIntersectionVerticalLine(segment, t.getLeftPoint()), findIntersectionVerticalLine(segment,t.getRightPoint())),
+                                t.getLeftPoint(), t.getRightPoint(),colorT);
+
+                upV.push_back(low);
+            }else{
+                low = Trapezoid(++idLastTrap,
+                                cg3::Segment2d(findIntersectionVerticalLine(segment, t.getLeftPoint()), findIntersectionVerticalLine(segment,t.getRightPoint())),
+                                t.getSegmentDown(),
+                                t.getLeftPoint(), t.getRightPoint(),colorT);
+
+                lowV.push_back(low);
+            }
+
+            //newTraps.push_back(low);
+//            if (i == 1)
+//                break;
+        }else{
+
+
+            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+
+            if (Algorithm::pointIsAboveSegment(segment, t.getLeftPoint())){
+                // merging
+                lowV.back().setSegmentUp(cg3::Segment2d(lowV.back().getSegmentUp().p1(), q1));
+                lowV.back().setSegmentDown(cg3::Segment2d(lowV.back().getSegmentDown().p1(), findIntersectionVerticalLine(t.getSegmentDown(),q1)));
+                lowV.back().setRightPoint(q1);
+
+            }else{
+                // merging
+                upV.back().setSegmentUp(cg3::Segment2d(upV.back().getSegmentUp().p1(), findIntersectionVerticalLine(t.getSegmentUp(),q1)));
+                upV.back().setSegmentDown(cg3::Segment2d(upV.back().getSegmentDown().p1(), q1));
+                upV.back().setRightPoint(q1);
+            }
+
+
+            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            if (Algorithm::pointIsAboveSegment(segment, t.getLeftPoint())){
+                d = Trapezoid(++idLastTrap,
+                              cg3::Segment2d(t.getSegmentUp().p1(),findIntersectionVerticalLine(t.getSegmentUp(), q1)),
+                              cg3::Segment2d(findIntersectionVerticalLine(segment, t.getLeftPoint()), q1),
+                              t.getLeftPoint(), q1, colorT);
+            }else{
+                d = Trapezoid(++idLastTrap,
+                              cg3::Segment2d(findIntersectionVerticalLine(segment, t.getLeftPoint()),q1),
+                              cg3::Segment2d(t.getSegmentDown().p1(),findIntersectionVerticalLine(t.getSegmentDown(), q1)),
+                              t.getLeftPoint(), q1, colorT);
+            }
+
+
+            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            if (Algorithm::pointIsAboveSegment(segment, t.getLeftPoint())){
+                e = Trapezoid(++idLastTrap,
+                              cg3::Segment2d(d.getSegmentUp().p2(), t.getSegmentUp().p2()),
+                              cg3::Segment2d(findIntersectionVerticalLine(t.getSegmentDown(), q1),t.getSegmentDown().p2()),
+                              q1, t.getRightPoint(), colorT);
+            }else{
+                e = Trapezoid(++idLastTrap,
+                              cg3::Segment2d(findIntersectionVerticalLine(t.getSegmentUp(), q1),t.getSegmentUp().p2()),
+                              cg3::Segment2d(d.getSegmentDown().p2(), t.getSegmentDown().p2()),
+                              q1, t.getRightPoint(), colorT);
+            }
+
+
+            newTraps.push_back(d);
+            newTraps.push_back(e);
+
+
+        }
     }
 
-//    colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
-//    Trapezoid e = Trapezoid(++idLastTrap,
-//                            cg3::Segment2d(c.getSegmentUp().p2(),tL.getSegmentUp().p2()),
-//                            cg3::Segment2d(d.getSegmentDown().p1(),tL.getSegmentDown().p2()),
-//                            q1, tL.getRightPoint(), colorT);
+    newTraps.insert(newTraps.end(), upV.begin(), upV.end());
+    newTraps.insert(newTraps.end(), lowV.begin(), lowV.end());
+
+    for(Trapezoid t : newTraps){
+        trapezoids.push_back(t);
+        newTrapsPointer.push_back(getTrapezoidWithId(t.getId()));
+    }
 
 
+    // neighbor
+//    a1->setNeighbor(t.getUpperLeftNeigh(),t.getBottomLeftNeigh(), c1, b1);
+//    b1->setNeighbor(a1, a1, d1, t.getBottomRightNeigh());
+//    c1->setNeighbor(a1, a1, e1, e1);
+//    d1->setNeighbor(b1, b1, e1, e1);
+//    e1->setNeighbor(c1, d1, tL.getUpperRightNeigh(), tL.getBottomRightNeigh());
 
 
+    for (Trapezoid* t : traps){
+        deleteTrapezoidWithId(t->getId());
+    }
+
+
+    // TODO DA CAMBIARE
+    return traps;
 
 }

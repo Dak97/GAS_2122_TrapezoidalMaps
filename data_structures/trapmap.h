@@ -6,6 +6,7 @@
 #include "data_structures/trapezoid.h"
 #include "data_structures/dagnode.h"
 #include <cg3/utilities/color.h>
+//#include "algoritms/algoritms.h"
 class TrapMap
 {
 public:
@@ -34,6 +35,7 @@ private:
 
 
     cg3::Point2d findIntersectionVerticalLine(const cg3::Segment2d& s, const cg3::Point2d& px);
+//    bool pointIsAboveSegment(cg3::Segment2d segment, cg3::Point2d point);
     void updateNeigh(Trapezoid *a, Trapezoid *b, const cg3::Segment2d& s);
 
 };

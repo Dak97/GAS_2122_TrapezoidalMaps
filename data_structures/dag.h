@@ -5,10 +5,10 @@
 #include "data_structures/dagnode.h"
 #include <cg3/geometry/segment.h>
 
-class DAG
+class Dag
 {
 public:
-    DAG(DrawableTrapMap& drawableTrapMap, Trapezoid *bb);
+    Dag(DrawableTrapMap& drawableTrapMap, Trapezoid *bb);
 
     void updateDag(std::vector<Trapezoid*> traps, DagNode* trapNode, const cg3::Segment2d& segment);
 //    DagNode* findTrapToModify(const cg3::Segment2d& segment);

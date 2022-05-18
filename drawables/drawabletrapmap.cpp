@@ -30,7 +30,7 @@ void DrawableTrapMap::draw() const
                         t.getSegmentUp().p1(),
                         t.getSegmentUp().p2(),
                         t.getColor(),
-                        1, true
+                        1, false
                         );
 
         }

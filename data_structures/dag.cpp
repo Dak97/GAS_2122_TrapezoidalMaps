@@ -1,6 +1,6 @@
 #include "dag.h"
 
-DAG::DAG(DrawableTrapMap& drawableTrapMap, Trapezoid *bb):
+Dag::Dag(DrawableTrapMap& drawableTrapMap, Trapezoid *bb):
     drawableTrapMap(drawableTrapMap)
 
 {
@@ -10,16 +10,16 @@ DAG::DAG(DrawableTrapMap& drawableTrapMap, Trapezoid *bb):
     std::cout << "Id del trap (costruttore) " << a->getId() << std::endl;
 
 }
-DagNode* DAG::getRoot() const {
+DagNode* Dag::getRoot() const {
     return root;
 }
 
-DagNode* DAG::createNewDagNode(DagNode::TypeNode typeObj, void *object){
+DagNode* Dag::createNewDagNode(DagNode::TypeNode typeObj, void *object){
     DagNode *newNode = new DagNode(typeObj, object);
     return newNode;
 }
 
-std::vector<Trapezoid*> DAG::followSegment(const cg3::Segment2d &segment, DagNode* trap){
+std::vector<Trapezoid*> Dag::followSegment(const cg3::Segment2d &segment, DagNode* trap){
     Trapezoid t = *(Trapezoid*)trap->getData().objj;
     cg3::Segment2d s = segment;
     std::vector<Trapezoid*> trapezoids;
@@ -42,7 +42,7 @@ std::vector<Trapezoid*> DAG::followSegment(const cg3::Segment2d &segment, DagNod
     return trapezoids;
 
 }
-std::pair<DagNode*, DagNode*> DAG::query(const cg3::Segment2d segment, bool &leftToRight){
+std::pair<DagNode*, DagNode*> Dag::query(const cg3::Segment2d segment, bool &leftToRight){
     DagNode* tmp = root;
     cg3::Point2d *p1, *q1;
     cg3::Segment2d* s1;
@@ -123,7 +123,7 @@ std::pair<DagNode*, DagNode*> DAG::query(const cg3::Segment2d segment, bool &lef
 
 }
 
-bool DAG::pointIsAbove(cg3::Segment2d *s, cg3::Point2d p){
+bool Dag::pointIsAbove(cg3::Segment2d *s, cg3::Point2d p){
     //            v1 = {x2-x1, y2-y1}   # Vector 1
     //            v2 = {xA-x1, yA-y1}   # Vector 2
     //            cross_product = v1.x*v2.y - v1.y*v2.x
@@ -144,7 +144,7 @@ bool DAG::pointIsAbove(cg3::Segment2d *s, cg3::Point2d p){
         return false;
     }
 }
-void DAG::updateDag(std::vector<Trapezoid*> traps, DagNode* trapNode, const cg3::Segment2d& segment){
+void Dag::updateDag(std::vector<Trapezoid*> traps, DagNode* trapNode, const cg3::Segment2d& segment){
     cg3::Point2d p1 = segment.p1();
     cg3::Point2d q1 = segment.p2();
 
