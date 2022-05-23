@@ -32,7 +32,6 @@ void DrawableTrapMap::draw() const
                         t.getColor(),
                         1, false
                         );
-
         }
     }
 }

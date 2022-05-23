@@ -11,7 +11,8 @@ public:
     Dag(DrawableTrapMap& drawableTrapMap, Trapezoid *bb);
 
     void updateDag(std::vector<Trapezoid*> traps, DagNode* trapNode, const cg3::Segment2d& segment);
-//    DagNode* findTrapToModify(const cg3::Segment2d& segment);
+    void updateDag2(std::vector<Trapezoid*> newTraps, std::vector<Trapezoid*> trapsToDelete, const cg3::Segment2d& segment);
+    bool isLeftNode(DagNode *node);
     DagNode* createNewDagNode(DagNode::TypeNode typeObj, void *object);
     std::pair<DagNode*, DagNode*> query(const cg3::Segment2d segment, bool &leftToRight);
     std::vector<Trapezoid*> followSegment(const cg3::Segment2d &segment, DagNode* trap);

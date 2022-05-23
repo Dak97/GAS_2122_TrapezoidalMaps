@@ -11,6 +11,7 @@ Trapezoid::Trapezoid(){
     bottomLeftNeigh = nullptr;
     upperRightNeigh = nullptr;
     bottomRightNeigh = nullptr;
+    refToDag = nullptr;
 }
 
 Trapezoid::Trapezoid(int id, cg3::Segment2d segmentUp, cg3::Segment2d segmentDown,
@@ -151,4 +152,25 @@ void Trapezoid::setNeighbor(Trapezoid *newUpperLeftNeigh, Trapezoid *newBottomLe
     bottomLeftNeigh = newBottomLeftNeigh;
     upperRightNeigh = newUpperRightNeigh;
     bottomRightNeigh = newBottomRightNeigh;
+}
+
+void Trapezoid::setTrapezoid(int _id, cg3::Segment2d _segmentUp, cg3::Segment2d _segmentDown,
+                  cg3::Point2d _leftP, cg3::Point2d _rightP, const cg3::Color _color)
+{
+    id = _id;
+    segmentUp = _segmentUp;
+    segmentDown = _segmentDown;
+    leftPoint = _leftP;
+    rightPoint = _rightP;
+    color = _color;
+}
+
+DagNode *Trapezoid::getRefToDag() const
+{
+    return refToDag;
+}
+
+void Trapezoid::setRefToDag(DagNode *newRefToDag)
+{
+    refToDag = newRefToDag;
 }

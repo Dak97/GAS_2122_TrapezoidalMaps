@@ -22,7 +22,7 @@ public:
     int getIndexWithId(const int id);
 
     void deleteTrapezoidWithId(const int id);
-
+    Trapezoid* addNewTrapezoid();
 
 
     void clear();

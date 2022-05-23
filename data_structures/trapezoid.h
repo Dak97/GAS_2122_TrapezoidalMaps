@@ -5,6 +5,8 @@
 
 #include <cg3/utilities/color.h>
 
+#include "data_structures/dagnode.h"
+
 #define BB 1e+6
 
 class Trapezoid {
@@ -55,6 +57,12 @@ public:
     void setNeighbor(Trapezoid *newUpperLeftNeigh, Trapezoid *newBottomLeftNeigh,
                      Trapezoid *newUpperRightNeigh, Trapezoid *newBottomRightNeigh);
 
+    void setTrapezoid(int id, cg3::Segment2d segmentUp, cg3::Segment2d segmentDown,
+                         cg3::Point2d leftP, cg3::Point2d rightP, const cg3::Color color);
+
+    DagNode *getRefToDag() const;
+    void setRefToDag(DagNode *newRefToDag);
+
 private:
     int id;
 
@@ -68,6 +76,8 @@ private:
     Trapezoid* upperRightNeigh;
     Trapezoid* bottomRightNeigh;
     cg3::Color color;
+
+    DagNode* refToDag;
 
 };
 

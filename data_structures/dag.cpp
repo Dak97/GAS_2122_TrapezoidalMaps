@@ -1,13 +1,13 @@
 #include "dag.h"
 
+#include "algorithm.h"
+
 Dag::Dag(DrawableTrapMap& drawableTrapMap, Trapezoid *bb):
     drawableTrapMap(drawableTrapMap)
 
 {
     // inizializzo la dag con la bounding box
     root = createNewDagNode(DagNode::TypeNode::Trapezoid, bb);
-    Trapezoid* a = (Trapezoid*)root->getData().objj;
-    std::cout << "Id del trap (costruttore) " << a->getId() << std::endl;
 
 }
 DagNode* Dag::getRoot() const {
@@ -21,12 +21,18 @@ DagNode* Dag::createNewDagNode(DagNode::TypeNode typeObj, void *object){
 
 std::vector<Trapezoid*> Dag::followSegment(const cg3::Segment2d &segment, DagNode* trap){
     Trapezoid t = *(Trapezoid*)trap->getData().objj;
-    cg3::Segment2d s = segment;
+    cg3::Segment2d s;
     std::vector<Trapezoid*> trapezoids;
     trapezoids.push_back((Trapezoid*)trap->getData().objj);
+
+    if (segment.p1() < segment.p2())
+        s = segment;
+    else{
+        s = cg3::Segment2d(segment.p2(), segment.p1());
+    }
     // se il punto q1 si trova a destra del right point del trapezoide
 
-    while (segment.p2().x() > t.getRightPoint().x()) {
+    while (s.p2().x() > t.getRightPoint().x()) {
 
         // se il right point si trova sopra il segmento
         if (pointIsAbove(&s, t.getRightPoint())){
@@ -154,6 +160,7 @@ void Dag::updateDag(std::vector<Trapezoid*> traps, DagNode* trapNode, const cg3:
     tmp = new DagNode(DagNode::TypeNode::Left, new cg3::Point2d(segment.p1().x(),segment.p1().y())); // inserisco il punto p1
 
     tmp->left = new DagNode(DagNode::TypeNode::Trapezoid, traps.at(0)); // inserisco il trapezoide A
+    traps.at(0)->setRefToDag(tmp->left); //setto la ref alla dag
     tmp->left->parent = tmp;
 
     tmp->right = new DagNode(DagNode::TypeNode::Right, new cg3::Point2d(segment.p2().x(),segment.p2().y())); // inserisco il punto q1
@@ -174,18 +181,110 @@ void Dag::updateDag(std::vector<Trapezoid*> traps, DagNode* trapNode, const cg3:
     tmp->left = new DagNode(DagNode::TypeNode::Segment, new cg3::Segment2d(p1,q1)); // inserisco il segmento s1
 
     tmp->right = new DagNode(DagNode::TypeNode::Trapezoid, traps.at(3)); // inserisco il trapezoide D
+    traps.at(3)->setRefToDag(tmp->right);
     tmp->right->parent = tmp;
 
     tmp = tmp->left;
 
     tmp->left = new DagNode(DagNode::TypeNode::Trapezoid, traps.at(1)); // inserisco il trapezoide B
+    traps.at(1)->setRefToDag(tmp->left);
     tmp->left->parent = tmp;
 
     tmp->right = new DagNode(DagNode::TypeNode::Trapezoid, traps.at(2)); // inserisco il trapezoide C
+    traps.at(2)->setRefToDag(tmp->right);
     tmp->right->parent = tmp;
 
     // dealloco la memoria del nodo da sostituire
     delete trapNode;
 
+}
+bool Dag::isLeftNode(DagNode *node){
+    Trapezoid *tLeft = (Trapezoid*)node->parent->left->getData().objj;
+    Trapezoid *t = (Trapezoid*)node->getData().objj;
+    if (tLeft->getId() == t->getId()){
+        return true;
+    }else{
+        return false;
+    }
+}
+void Dag::updateDag2(std::vector<Trapezoid*> newTraps, std::vector<Trapezoid*> trapsToDelete, const cg3::Segment2d& segment){
+    DagNode *nodeToSubstitute, *rootSubDag, *tmp;
+    int j=0;
+
+    for(size_t i = 0; i <= trapsToDelete.size() -1; i++){
+        nodeToSubstitute = trapsToDelete[i]->getRefToDag();
+
+        if (i == 0){
+            rootSubDag = new DagNode(DagNode::TypeNode::Left, new cg3::Point2d(segment.p1()));
+            rootSubDag->left = new DagNode(DagNode::TypeNode::Trapezoid, newTraps.at(j));
+            newTraps.at(j)->setRefToDag(rootSubDag->left);
+            rootSubDag->left->parent = rootSubDag;
+            j++;
+
+            rootSubDag->right = new DagNode(DagNode::TypeNode::Segment, new cg3::Segment2d(segment));
+            tmp = rootSubDag->right;
+
+            if (Algorithm::pointIsAboveSegment(segment, newTraps.at(j)->getRightPoint())){
+                tmp->left = new DagNode(DagNode::TypeNode::Trapezoid, newTraps.at(j));
+                newTraps.at(j)->setRefToDag(tmp->left);
+                tmp->left->parent = tmp;
+                j++;
+
+                tmp->right = new DagNode(DagNode::TypeNode::Trapezoid, newTraps.at(j));
+                newTraps.at(j++)->setRefToDag(tmp->right);
+                tmp->right->parent = tmp;
+            }else{
+                tmp->right = new DagNode(DagNode::TypeNode::Trapezoid, newTraps.at(j));
+                newTraps.at(j++)->setRefToDag(tmp->right);
+                tmp->right->parent = tmp;
+
+                tmp->left = new DagNode(DagNode::TypeNode::Trapezoid, newTraps.at(j));
+                newTraps.at(j++)->setRefToDag(tmp->left);
+                tmp->left->parent = tmp;
+            }
+
+            if (isLeftNode(nodeToSubstitute))
+                nodeToSubstitute->parent->left = rootSubDag;
+            else
+                nodeToSubstitute->parent->right = rootSubDag;
+
+            delete nodeToSubstitute;
+        }else{
+            rootSubDag = new DagNode(DagNode::TypeNode::Right, new cg3::Point2d(segment.p2()));
+            rootSubDag->right = new DagNode(DagNode::TypeNode::Trapezoid, newTraps.back());
+            newTraps.back()->setRefToDag(rootSubDag->right);
+            rootSubDag->right->parent = rootSubDag;
+
+            rootSubDag->left = new DagNode(DagNode::TypeNode::Segment, new cg3::Segment2d(segment));
+            tmp = rootSubDag->left;
+
+            if (Algorithm::pointIsAboveSegment(segment, newTraps.at(j)->getLeftPoint())){
+                tmp->left = new DagNode(DagNode::TypeNode::Trapezoid, newTraps.at(j));
+                newTraps.at(j)->setRefToDag(tmp->left);
+                tmp->left->parent = tmp;
+
+                tmp->right = new DagNode(DagNode::TypeNode::Trapezoid, newTraps.at(j-1));
+                newTraps.at(j-1)->setRefToDag(tmp->right);
+                tmp->right->parent = tmp;
+            }else{
+                tmp->right = new DagNode(DagNode::TypeNode::Trapezoid, newTraps.at(j));
+                newTraps.at(j)->setRefToDag(tmp->right);
+                tmp->right->parent = tmp;
+
+                tmp->left = new DagNode(DagNode::TypeNode::Trapezoid, newTraps.at(j-1));
+                newTraps.at(j-1)->setRefToDag(tmp->left);
+                tmp->left->parent = tmp;
+            }
+
+            if (isLeftNode(nodeToSubstitute))
+                nodeToSubstitute->parent->left = rootSubDag;
+            else
+                nodeToSubstitute->parent->right = rootSubDag;
+
+            delete nodeToSubstitute;
+
+        }
+
+    }
 }
 
