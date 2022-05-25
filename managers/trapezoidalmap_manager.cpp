@@ -283,8 +283,11 @@ clearTrapezoidalMap()
 {
     //---------------------------------------------------------------------
     //Clear here your trapezoidal map data structure.
+    drawableTrapMap.clear();
+    dag.clearDag();
 
-
+    drawableTrapMap.init();
+    dag.init(drawableTrapMap.getTrapezoidWithId(0));
 
     //#####################################################################
 }

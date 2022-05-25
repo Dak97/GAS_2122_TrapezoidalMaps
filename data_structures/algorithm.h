@@ -8,8 +8,9 @@
 
 namespace Algorithm
 {
-    void buildTrapMapDag(Dag& dag, TrapMap& trapMap, const cg3::Segment2d segment);
+    void buildTrapMapDag(Dag& dag, TrapMap& trapMap, const cg3::Segment2d& segment);
     bool pointIsAboveSegment(cg3::Segment2d segment, cg3::Point2d point);
+    std::pair<DagNode*, DagNode*> query(Dag& dag, const cg3::Segment2d& segment);
 }
 
 #endif // ALGORITHM_H

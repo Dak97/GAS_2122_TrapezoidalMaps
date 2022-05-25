@@ -1,12 +1,12 @@
 #include "trapezoid.h"
 
 Trapezoid::Trapezoid(){
+    id = 0;
     segmentUp = cg3::Segment2d(cg3::Point2d(-BB,BB),cg3::Point2d(BB,BB));
     segmentDown = cg3::Segment2d(cg3::Point2d(-BB,-BB),cg3::Point2d(BB,-BB));
     leftPoint = cg3::Point2d(-BB,BB);
     rightPoint = cg3::Point2d(BB,BB);
     color = cg3::Color(255,255,255);
-    id = 0;
     upperLeftNeigh = nullptr;
     bottomLeftNeigh = nullptr;
     upperRightNeigh = nullptr;

@@ -12,7 +12,7 @@ class TrapMap
 public:
     TrapMap();
 
-    std::vector<Trapezoid*> addFourTrapezoids(const cg3::Segment2d &segment, DagNode* bbNode, bool &leftToRight);
+    std::vector<Trapezoid*> addFourTrapezoids(const cg3::Segment2d &segment, DagNode* bbNode);
     std::vector<Trapezoid*> newTrapezoids(const cg3::Segment2d &segment,  std::vector<Trapezoid*> &traps, bool &leftToRight);
 
     // restituisco una lista di trapezoidi
@@ -22,8 +22,9 @@ public:
     int getIndexWithId(const int id);
 
     void deleteTrapezoidWithId(const int id);
+    void deleteTrapezoidByRef(std::vector<Trapezoid*> traps);
     Trapezoid* addNewTrapezoid();
-
+    void init();
 
     void clear();
 

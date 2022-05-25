@@ -2,52 +2,116 @@
 
 namespace Algorithm
 {
-    void buildTrapMapDag(Dag& dag, TrapMap& trapMap, const cg3::Segment2d segment){
-        cg3::Segment2d s = segment;
+    void buildTrapMapDag(Dag& dag, TrapMap& trapMap, const cg3::Segment2d& segment){
+        cg3::Segment2d segment_oriented = segment;
         std::pair<DagNode*, DagNode*> trapsNodeQuery;
         std::vector<Trapezoid*> trapforDag, newTrapsForDag;
         bool leftToRight = true;
 
-        if (s.p2().x() < s.p1().x()) {
-            leftToRight = false; // il segmento non é orientato da sx -> dx
-            s = cg3::Segment2d(s.p2(), s.p1());
+        // check if the segment is left to right orinted
+        if (segment_oriented.p2().x() < segment_oriented.p1().x()) {
+            leftToRight = false;                                                                // the segment is not left to right
+            segment_oriented = cg3::Segment2d(segment_oriented.p2(), segment_oriented.p1());    // create a new segment left to right oriented
         }
 
-        // ho i nodi dei trapezoidi da modificare
-         trapsNodeQuery = dag.query(s, leftToRight);
+        // find dag node of trapezoids to change
+        trapsNodeQuery = Algorithm::query(dag, segment_oriented);
 
-         // il primo ed il secondo punto giaciono sullo stesso trapezoide
+         // check if the end-points are inside the same trapezoid
          if ((*(Trapezoid*)trapsNodeQuery.first->getData().objj).getId() ==
                  (*(Trapezoid*)trapsNodeQuery.second->getData().objj).getId()){
 
-             // ho aggiunto 4 nuovi trapezoidi alla trapezoidal map
-             trapforDag = trapMap.addFourTrapezoids(s,trapsNodeQuery.first, leftToRight);
+             // create 4 new trapezoids that are inside one trapezoid
+             trapforDag = trapMap.addFourTrapezoids(segment_oriented,trapsNodeQuery.first);
 
-             int bbId = (*(Trapezoid*)trapsNodeQuery.first->getData().objj).getId();
+             int bbId = ((Trapezoid*)trapsNodeQuery.first->getData().objj)->getId();
 
               //aggiorno la dag con i nuovi trapezoidi
-             if (leftToRight){
-                 dag.updateDag(trapforDag, trapsNodeQuery.first, s);
-             }else{
-                 dag.updateDag(trapforDag, trapsNodeQuery.first, s);
-             }
+              dag.updateDag(trapforDag, trapsNodeQuery.first, segment_oriented);
 
              // elimino il trapezoide dalla trapezoidal map
              trapMap.deleteTrapezoidWithId(bbId);
          }else{
              // eseguo il follow segment per trovare tutti i trapezoidi da modificare
-             trapforDag = dag.followSegment(s, trapsNodeQuery.first);
+             trapforDag = dag.followSegment(segment_oriented, trapsNodeQuery.first);
 
-             newTrapsForDag = trapMap.newTrapezoids(s, trapforDag, leftToRight);
+             newTrapsForDag = trapMap.newTrapezoids(segment_oriented, trapforDag, leftToRight);
 
              //aggiornamento della dag con i nuovi trapezoidi
-             dag.updateDag2(newTrapsForDag, trapforDag, s);
+             dag.updateDag2(newTrapsForDag, trapforDag, segment_oriented);
 
              for (Trapezoid* t : trapforDag){
                      trapMap.deleteTrapezoidWithId(t->getId());
              }
 
          }
+    }
+
+    std::pair<DagNode*, DagNode*> query(Dag& dag, const cg3::Segment2d& segment){
+        DagNode* tmp = dag.getRoot();
+        cg3::Point2d *p1, *q1;
+        cg3::Segment2d* s1;
+        bool isFirstPoint = true;
+        cg3::Point2d queryPoint = segment.p1();
+        std::pair<DagNode*, DagNode*> trapezoids;
+
+        while(true){
+
+            switch(tmp->getData().type){
+                case DagNode::TypeNode::Trapezoid:
+                    if (isFirstPoint){
+                        // inserisco il primo trapezoide nel pair
+                        trapezoids.first = tmp;
+                        tmp = dag.getRoot();
+
+                        queryPoint = segment.p2();
+
+                        isFirstPoint = false;
+                    }else{
+                        trapezoids.second = tmp;
+                        return trapezoids;
+                    }
+                    break;
+
+                case DagNode::TypeNode::Left:
+                    p1 = (cg3::Point2d*)tmp->getData().objj;
+                    if ( queryPoint.x() > p1->x()){
+                        // andare a destra
+                        tmp = tmp->right;
+                    }else{
+                        //andare a sinistra
+                        tmp = tmp->left;
+                    }
+                    break;
+
+                case DagNode::TypeNode::Right:
+                    q1 = (cg3::Point2d*)tmp->getData().objj;
+                    if (queryPoint.x() > q1->x()){
+                        // andare a destra
+                        tmp = tmp->right;
+                    }else{
+                        //andare a sinistra
+                        tmp = tmp->left;
+                    }
+                    break;
+
+                case DagNode::TypeNode::Segment:
+                    s1 = (cg3::Segment2d*)tmp->getData().objj;
+
+                    if (Algorithm::pointIsAboveSegment(*s1,queryPoint)){
+                        //il punto si trova sopra il segmento
+                        tmp = tmp->left;
+                    }else{
+                        // il punto si trova sotto il segmento o sul
+                        tmp = tmp->right;
+                    }
+                    break;
+
+                default:
+                    break;
+
+            }
+        }
     }
 
     bool pointIsAboveSegment(cg3::Segment2d segment, cg3::Point2d point){
