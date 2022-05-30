@@ -41,17 +41,18 @@ std::vector<Trapezoid*> Dag::followSegment(const cg3::Segment2d &segment, DagNod
     std::vector<Trapezoid*> trapezoids;
     trapezoids.push_back((Trapezoid*)trap->getData().objj);
 
-    if (segment.p1() < segment.p2())
-        s = segment;
-    else{
-        s = cg3::Segment2d(segment.p2(), segment.p1());
-    }
+//    if (segment.p1() < segment.p2())
+//        s = segment;
+//    else{
+//        s = cg3::Segment2d(segment.p2(), segment.p1());
+//    }
+
     // se il punto q1 si trova a destra del right point del trapezoide
 
-    while (s.p2().x() > t.getRightPoint().x()) {
+    while (segment.p2().x() > t.getRightPoint().x()) {
 
         // se il right point si trova sopra il segmento
-        if (pointIsAbove(&s, t.getRightPoint())){
+        if (Algorithm::pointIsAboveSegment(segment, t.getRightPoint())){
             // prendo il bottom right neighbor
             trapezoids.push_back(t.getBottomRightNeigh());
             t = *t.getBottomRightNeigh();

@@ -6,11 +6,11 @@ namespace Algorithm
         cg3::Segment2d segment_oriented = segment;
         std::pair<DagNode*, DagNode*> trapsNodeQuery;
         std::vector<Trapezoid*> trapforDag, newTrapsForDag;
-        bool leftToRight = true;
+        //bool leftToRight = true;
 
         // check if the segment is left to right orinted
         if (segment_oriented.p2().x() < segment_oriented.p1().x()) {
-            leftToRight = false;                                                                // the segment is not left to right
+            //leftToRight = false;                                                                // the segment is not left to right
             segment_oriented = cg3::Segment2d(segment_oriented.p2(), segment_oriented.p1());    // create a new segment left to right oriented
         }
 
@@ -26,16 +26,16 @@ namespace Algorithm
 
              int bbId = ((Trapezoid*)trapsNodeQuery.first->getData().objj)->getId();
 
-              //aggiorno la dag con i nuovi trapezoidi
+              //update the dag with the new created trapezoids
               dag.updateDag(trapforDag, trapsNodeQuery.first, segment_oriented);
 
-             // elimino il trapezoide dalla trapezoidal map
+             // delete trapezoid
              trapMap.deleteTrapezoidWithId(bbId);
          }else{
-             // eseguo il follow segment per trovare tutti i trapezoidi da modificare
+             // use the follow segment algorithm to find all the trapezoids that intersect the new segment
              trapforDag = dag.followSegment(segment_oriented, trapsNodeQuery.first);
 
-             newTrapsForDag = trapMap.newTrapezoids(segment_oriented, trapforDag, leftToRight);
+             newTrapsForDag = trapMap.newTrapezoids(segment_oriented, trapforDag);
 
              //aggiornamento della dag con i nuovi trapezoidi
              dag.updateDag2(newTrapsForDag, trapforDag, segment_oriented);
@@ -45,6 +45,21 @@ namespace Algorithm
              }
 
          }
+
+//         for (Trapezoid t : trapMap.getTrapezoids()){
+//            std::cout << "ID: " << t.getId() << std::endl;
+
+//            if (t.getUpperLeftNeigh() != nullptr && t.getBottomLeftNeigh() != nullptr)
+//                std::cout << "U-L " << t.getUpperLeftNeigh()->getId() << " B-L " << t.getBottomLeftNeigh()->getId();
+//            else
+//                std::cout << "U-L " << "NULL " << " B-L " << "NULL";
+
+
+//            if (t.getUpperRightNeigh() != nullptr && t.getBottomRightNeigh() != nullptr)
+//                std::cout << " U-R " << t.getUpperRightNeigh()->getId() << " B-R " << t.getBottomRightNeigh()->getId() << std::endl;
+//            else
+//                std::cout << " U-R " << "NULL" << " B-R " << "NULL" << std::endl;
+//        }
     }
 
     std::pair<DagNode*, DagNode*> query(Dag& dag, const cg3::Segment2d& segment){

@@ -13,7 +13,11 @@ public:
     TrapMap();
 
     std::vector<Trapezoid*> addFourTrapezoids(const cg3::Segment2d &segment, DagNode* bbNode);
-    std::vector<Trapezoid*> newTrapezoids(const cg3::Segment2d &segment,  std::vector<Trapezoid*> &traps, bool &leftToRight);
+    std::vector<Trapezoid*> newTrapezoids(const cg3::Segment2d &segment,  std::vector<Trapezoid*>& traps);
+    void splitInThreeLeft(Trapezoid *a, Trapezoid *b, Trapezoid *c_1, std::vector<Trapezoid*>& low, std::vector<Trapezoid*>& up,
+                      Trapezoid& bb,  const cg3::Segment2d& segment, int id);
+    void splitInThreeRight(Trapezoid *b, Trapezoid *c_1, std::vector<Trapezoid*>& low, std::vector<Trapezoid*>& up,
+                      Trapezoid& bb,  const cg3::Segment2d& segment, int id);
 
     // restituisco una lista di trapezoidi
     const std::list<Trapezoid> getTrapezoids() const;
