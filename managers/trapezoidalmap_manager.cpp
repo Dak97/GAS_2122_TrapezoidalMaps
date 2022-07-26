@@ -38,7 +38,8 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
     firstPointSelectedSize(5),
     isFirstPointSelected(false),
     drawableTrapMap(BOUNDINGBOX),
-    dag(drawableTrapMap, drawableTrapMap.getTrapezoidWithId(0))
+    dag(drawableTrapMap, drawableTrapMap.getTrapezoidWithId(0)),
+    prevHighLighted(nullptr)
 {
     //NOTE 1: you probably need to initialize some objects in the constructor. You
     //can see how to initialize an attribute in the lines above. This is C++ style
@@ -85,12 +86,6 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
     //the dataset.
 
 
-
-    Trapezoid* a = (Trapezoid*)dag.getRoot()->getData().objj;
-
-//    std::cout << "Id del trap " << drawableTrapMap.getTrapezoids().at(0).getId() << std::endl;
-    std::cout << "Id del trap " << a->getId() << std::endl;
-    std::cout << "Id del trap " << drawableTrapMap.getTrapezoids().size() << std::endl;
     //#####################################################################
 
 
@@ -205,9 +200,11 @@ void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& seg
     //it more efficient in memory. However, depending on how you implement your algorithms and data 
     //structures, you could save directly the point (Point2d) in each trapezoid (it is fine).
 
-
+    prevHighLighted = nullptr;
     Algorithm::buildTrapMapDag(dag, drawableTrapMap, segment);
-
+    std::cout << "nuovo" << std::endl;
+//    Algorithm::printDag(dag);
+//    Algorithm::printNeigh(drawableTrapMap);
 
     //#####################################################################
 
@@ -255,6 +252,46 @@ void TrapezoidalMapManager::queryTrapezoidalMap(const cg3::Point2d& queryPoint)
 
     //#####################################################################
 
+    drawableTrapMap.compareNeigh();
+    if (prevHighLighted != nullptr){
+
+        prevHighLighted->setHighlighted(false);
+        if (prevHighLighted->getUpperLeftNeigh() != nullptr)
+            prevHighLighted->getUpperLeftNeigh()->setHighlighted(false);
+        if (prevHighLighted->getBottomLeftNeigh() != nullptr)
+            prevHighLighted->getBottomLeftNeigh()->setHighlighted(false);
+        if (prevHighLighted->getUpperRightNeigh() != nullptr)
+            prevHighLighted->getUpperRightNeigh()->setHighlighted(false);
+        if (prevHighLighted->getBottomRightNeigh() != nullptr)
+            prevHighLighted->getBottomRightNeigh()->setHighlighted(false);
+    }
+    DagNode* p = Algorithm::query(dag, queryPoint);
+
+    if (p->getData().type == DagNode::TypeNode::Trapezoid){
+        Trapezoid* t = (Trapezoid*)p->getData().objj;
+        std::cout << t->getId() << " Trapezoide Querato!" << std::endl;
+        std::cout << ((t->getUpperLeftNeigh() != nullptr) ? t->getUpperLeftNeigh()->getId() : 0) << " - " << ((t->getBottomLeftNeigh()!=nullptr) ? t->getBottomLeftNeigh()->getId() : 0);
+        std::cout << " - " << ((t->getUpperRightNeigh()!=nullptr) ? t->getUpperRightNeigh()->getId() : 0) << " - " << ((t->getBottomRightNeigh()!=nullptr)?t->getBottomRightNeigh()->getId() : 0) << std::endl;
+
+//        Algorithm::printNeigh(drawableTrapMap);
+
+        prevHighLighted = t;
+
+        drawableTrapMap.highlightTrapezoid(t);
+
+        if (prevHighLighted->getUpperLeftNeigh() != nullptr)
+            drawableTrapMap.highlightTrapezoid(t->getUpperLeftNeigh());
+        if (prevHighLighted->getBottomLeftNeigh() != nullptr)
+            drawableTrapMap.highlightTrapezoid(t->getBottomLeftNeigh());
+        if (prevHighLighted->getUpperRightNeigh() != nullptr)
+             drawableTrapMap.highlightTrapezoid(t->getUpperRightNeigh());
+        if (prevHighLighted->getBottomRightNeigh() != nullptr)
+            drawableTrapMap.highlightTrapezoid(t->getBottomRightNeigh());
+    }else{
+        std::cout << "Errore: Il tipo non è un Trapezoide\n";
+    }
+
+
 
 
     //---------------------------------------------------------------------
@@ -288,6 +325,7 @@ clearTrapezoidalMap()
 
     drawableTrapMap.init();
     dag.init(drawableTrapMap.getTrapezoidWithId(0));
+    prevHighLighted = nullptr;
 
     //#####################################################################
 }

@@ -63,6 +63,9 @@ public:
     DagNode *getRefToDag() const;
     void setRefToDag(DagNode *newRefToDag);
 
+    bool getHighlighted() const;
+    void setHighlighted(bool newHighlighted);
+
 private:
     int id;
 
@@ -76,6 +79,7 @@ private:
     Trapezoid* upperRightNeigh;
     Trapezoid* bottomRightNeigh;
     cg3::Color color;
+    bool highlighted;
 
     DagNode* refToDag;
 

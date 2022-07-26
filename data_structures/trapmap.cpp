@@ -27,9 +27,12 @@ Trapezoid* TrapMap::getTrapezoidWithId(const int id){
 }
 
 void TrapMap::deleteTrapezoidByRef(std::vector<Trapezoid*> traps){
-//    for (Trapezoid* t : traps){
+//    for (const Trapezoid* t : traps){
 //        trapezoids.remove(*t);
 //    }
+}
+void TrapMap::deleteTrapezoidByRef(Trapezoid* trap){
+//    trapezoids.remove(*trap);
 
 }
 
@@ -227,8 +230,9 @@ std::vector<Trapezoid*> TrapMap::addFourTrapezoids(const cg3::Segment2d& segment
     bottom->setNeighbor(left, left, right, right);
 
     right->setNeighbor(top, bottom, bb.getUpperRightNeigh(), bb.getBottomRightNeigh());
-    if (bb.getUpperRightNeigh() != nullptr && bb.getBottomRightNeigh() != nullptr && (bb.getUpperRightNeigh()->getId() == bb.getBottomRightNeigh()->getId())){
-        if (Algorithm::pointIsAboveSegment(segment, bb.getUpperLeftNeigh()->getLeftPoint())){
+    if (bb.getUpperRightNeigh() != nullptr && bb.getBottomRightNeigh() != nullptr &&
+            (bb.getUpperRightNeigh()->getId() == bb.getBottomRightNeigh()->getId())){
+        if (Algorithm::pointIsAboveSegment(segment, bb.getUpperRightNeigh()->getLeftPoint())){
             bb.getBottomRightNeigh()->setBottomLeftNeigh(right);
         }else{
             bb.getUpperRightNeigh()->setUpperLeftNeigh(right);
@@ -325,12 +329,13 @@ void TrapMap::splitInThreeLeft(Trapezoid *a, Trapezoid *b, Trapezoid *c_1, std::
                         cg3::Segment2d(a->getSegmentUp().p2(), findIntersectionVerticalLine(bb.getSegmentUp(), bb.getRightPoint())),
                         cg3::Segment2d(p1,findIntersectionVerticalLine(segment, bb.getRightPoint())),
                         p1, bb.getRightPoint(), colorT);
+        up.push_back(b);
     }else{
         b->setTrapezoid(++idLastTrap,
                         cg3::Segment2d(p1,findIntersectionVerticalLine(segment,bb.getRightPoint())),
                         cg3::Segment2d(a->getSegmentDown().p2(),bb.getSegmentDown().p2()),
                         p1, bb.getRightPoint(), colorT);
-
+        low.push_back(b);
     }
 
     colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
@@ -354,273 +359,455 @@ std::vector<Trapezoid*> TrapMap::newTrapezoids(const cg3::Segment2d& segment,  s
     cg3::Point2d p1, q1;
     Trapezoid t;
     cg3::Color colorT;
-    std::vector<Trapezoid*> upV, lowV, newTrapsToReturn;
-    Trapezoid *a, *b, *c_1, *d, *e, *low;
+    std::vector<Trapezoid*> up_merging, low_merging, newTrapsToReturn;
+    Trapezoid *left_t, *no_merge_t, *merge_t, *no_merge_right_t, *right, *mirror_merge_t;
+
 
     int idLastTrap = trapezoids.back().getId();
 
-    a = addNewTrapezoid();
-    b = addNewTrapezoid();
-    c_1 = addNewTrapezoid();
+    left_t = addNewTrapezoid();
+    no_merge_t = addNewTrapezoid();
+    merge_t = addNewTrapezoid();
 
 
-     for(size_t i = 0; i <= traps.size() -1; i++){
-        // prendo l'i-esimo trapezoide da modificare
+      for(size_t i = 0; i <= traps.size() -1; i++){
+
         t = *(traps[i]);
         if (i == 0){
-            // a
-            splitInThreeLeft(a,b,c_1,lowV, upV, t, segment, idLastTrap);
 
+            splitInThreeLeft(left_t, no_merge_t, merge_t, low_merging, up_merging, t, segment, idLastTrap);
 
-            newTrapsToReturn.push_back(a);
+            newTrapsToReturn.push_back(left_t);
 
-            // b
+            newTrapsToReturn.push_back(no_merge_t);
 
-            newTrapsToReturn.push_back(b);
+            newTrapsToReturn.push_back(merge_t);
 
+            //////////////////////
+            // NEIGHBOR SETTING //
+            //      LEFT_T      //
+            //////////////////////
 
-
-            // c'
-            newTrapsToReturn.push_back(c_1);
-
-            // A neighbor //
-            a->setUpperLeftNeigh(t.getUpperLeftNeigh());
-            a->setBottomLeftNeigh(t.getBottomLeftNeigh());
+            // assign new trapezoid's neighbor
             if (Algorithm::pointIsAboveSegment(segment, t.getRightPoint())){
-                a->setUpperRightNeigh(b);
-                a->setBottomRightNeigh(c_1);
+                left_t->setUpperRightNeigh(no_merge_t);
+                left_t->setBottomRightNeigh(merge_t);
             }else{
-                a->setUpperRightNeigh(c_1);
-                a->setBottomRightNeigh(b);
+                left_t->setUpperRightNeigh(merge_t);
+                left_t->setBottomRightNeigh(no_merge_t);
             }
 
-            if (t.getBottomLeftNeigh() != nullptr && t.getUpperLeftNeigh() != nullptr){
+            // assign old neighbor inherited from current trapezoid t
+            left_t->setUpperLeftNeigh(t.getUpperLeftNeigh());
+            left_t->setBottomLeftNeigh(t.getBottomLeftNeigh());
 
+            // update other trapezoids affected by left_t
+            if (t.getBottomLeftNeigh() != nullptr && t.getUpperLeftNeigh() != nullptr){
                 if (t.getBottomLeftNeigh()->getId() == t.getUpperLeftNeigh()->getId()){
-                    if (Algorithm::pointIsAboveSegment(segment, t.getLeftPoint())){
-                        t.getUpperLeftNeigh()->setBottomRightNeigh(a);
+                    // upper and lower neighbor are the same
+                    if (t.getId() == t.getUpperLeftNeigh()->getUpperRightNeigh()->getId()){
+                        t.getUpperLeftNeigh()->setUpperRightNeigh(left_t);
                     }else{
-                        t.getUpperLeftNeigh()->setUpperRightNeigh(a);
+                        t.getUpperLeftNeigh()->setBottomRightNeigh(left_t);
                     }
                 }else{
-                    t.getUpperLeftNeigh()->setUpperRightNeigh(a);
-                    t.getUpperLeftNeigh()->setBottomRightNeigh(a);
+                   // upper and lower neighbor are different trapezoids
+                   // i have to change both neighbor
+                    t.getUpperLeftNeigh()->setUpperRightNeigh(left_t);
+                    t.getUpperLeftNeigh()->setBottomRightNeigh(left_t);
 
-                    t.getBottomLeftNeigh()->setUpperRightNeigh(a);
-                    t.getBottomLeftNeigh()->setBottomRightNeigh(a);
+                    t.getBottomLeftNeigh()->setUpperRightNeigh(left_t);
+                    t.getBottomLeftNeigh()->setBottomRightNeigh(left_t);
                 }
             }
 
-            //B neighbor
-            b->setUpperLeftNeigh(a);
-            b->setBottomLeftNeigh(a);
-            b->setUpperRightNeigh(t.getUpperRightNeigh());
-            b->setBottomRightNeigh(t.getBottomRightNeigh());
+            //////////////////////
+            // NEIGHBOR SETTING //
+            //    NO_MERGE_T    //
+            //////////////////////
 
-            if (t.getUpperRightNeigh()->getId() == t.getBottomRightNeigh()->getId()){
-                if (Algorithm::pointIsAboveSegment(segment, t.getLeftPoint())){
-                    t.getUpperRightNeigh()->setBottomLeftNeigh(b);
+            // assign new trapezoid's neighbor
+            no_merge_t->setUpperLeftNeigh(left_t);
+            no_merge_t->setBottomLeftNeigh(left_t);
+
+            // assign old neighbor inherited from current trapezoid t
+            no_merge_t->setUpperRightNeigh(t.getUpperRightNeigh());
+            no_merge_t->setBottomRightNeigh(t.getBottomRightNeigh());
+
+            // update other trapezoids affected by no_merge_t
+            if (t.getUpperRightNeigh()->getId() != t.getBottomRightNeigh()->getId()){
+                if (Algorithm::pointIsAboveSegment(segment, t.getRightPoint())){
+                    // update trapezoid that won't be modified
+                    t.getUpperRightNeigh()->setUpperLeftNeigh(no_merge_t);
+                    t.getUpperRightNeigh()->setBottomLeftNeigh(no_merge_t);
                 }else{
-                    t.getUpperRightNeigh()->setUpperLeftNeigh(b);
+                    t.getBottomRightNeigh()->setUpperLeftNeigh(no_merge_t);
+                    t.getBottomRightNeigh()->setBottomLeftNeigh(no_merge_t);
                 }
-            }else{
-                t.getUpperRightNeigh()->setUpperLeftNeigh(b);
-                t.getUpperRightNeigh()->setBottomLeftNeigh(b);
-
-                t.getBottomRightNeigh()->setUpperLeftNeigh(b);
-                t.getBottomRightNeigh()->setBottomLeftNeigh(b);
             }
 
-            // c neighbor
-            c_1->setUpperLeftNeigh(a);
-            c_1->setBottomLeftNeigh(a);
 
-            if (Algorithm::pointIsAboveSegment(segment, t.getLeftPoint())){
-                c_1->setUpperRightNeigh(t.getBottomRightNeigh());
-                c_1->setBottomRightNeigh(t.getBottomRightNeigh());
+            //////////////////////
+            // NEIGHBOR SETTING //
+            //    MERGE_T       //
+            //////////////////////
 
-                //t.getBottomRightNeigh()->setBottomLeftNeigh(c_1);
+            // assign new trapezoid's neighbor
+            merge_t->setUpperLeftNeigh(left_t);
+            merge_t->setBottomLeftNeigh(left_t);
+
+            // assign old neighbor inherited from current trapezoid t
+            if (Algorithm::pointIsAboveSegment(segment, t.getRightPoint())){
+                merge_t->setUpperRightNeigh(t.getBottomRightNeigh());
+                merge_t->setBottomRightNeigh(t.getBottomRightNeigh());
             }else{
-                c_1->setUpperRightNeigh(t.getUpperRightNeigh());
-                c_1->setBottomRightNeigh(t.getUpperRightNeigh());
-
-                //t.getUpperRightNeigh()->setUpperLeftNeigh(c_1);
+                merge_t->setUpperRightNeigh(t.getUpperRightNeigh());
+                merge_t->setBottomRightNeigh(t.getUpperRightNeigh());
             }
+
+
+
 
         }else if (i < traps.size() - 1){
-            // creo i due nuovi trapezoidi
+
+            // MERGING TRAPEZOID
             colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
             if (Algorithm::pointIsAboveSegment(segment, t.getLeftPoint())){
-                lowV.back()->setSegmentUp(cg3::Segment2d(lowV.back()->getSegmentUp().p1(),
+                // trapezoid that has to be merged is in low_merging
+
+                // update merging trapezoid's shape
+                low_merging.back()->setSegmentUp(cg3::Segment2d(low_merging.back()->getSegmentUp().p1(),
                                                            findIntersectionVerticalLine(segment, t.getRightPoint())));
 
-                lowV.back()->setSegmentDown(cg3::Segment2d(lowV.back()->getSegmentDown().p1(),
+                low_merging.back()->setSegmentDown(cg3::Segment2d(low_merging.back()->getSegmentDown().p1(),
                                                              findIntersectionVerticalLine(t.getSegmentDown(), t.getRightPoint())));
+                // update right point
+                low_merging.back()->setRightPoint(t.getRightPoint());
 
-                // NEIGHBOR
-                lowV.back()->setUpperRightNeigh(t.getUpperRightNeigh());
-                lowV.back()->setBottomRightNeigh(t.getBottomRightNeigh());
 
-                t.getUpperRightNeigh()->setUpperLeftNeigh(lowV.back());
-                t.getUpperRightNeigh()->setBottomLeftNeigh(lowV.back());
+                //////////////////////
+                // NEIGHBOR SETTING //
+                //////////////////////
 
-                t.getBottomRightNeigh()->setBottomLeftNeigh(lowV.back());
+                if (t.getUpperRightNeigh()->getId() == t.getBottomRightNeigh()->getId()){
+                    low_merging.back()->setUpperRightNeigh(t.getUpperRightNeigh());
+                    low_merging.back()->setBottomRightNeigh(t.getBottomRightNeigh());
+
+                }else if (Algorithm::pointIsAboveSegment(segment, t.getRightPoint())){
+                    low_merging.back()->setUpperRightNeigh(t.getBottomRightNeigh());
+                    low_merging.back()->setBottomRightNeigh(t.getBottomRightNeigh());
+                }else{
+
+                    low_merging.back()->setUpperRightNeigh(t.getUpperRightNeigh());
+                    low_merging.back()->setBottomRightNeigh(t.getBottomRightNeigh());
+
+                    // ci potrebbero essere problemi che t.getBottomRight abbia
+                    // due vicini diversi
+                    t.getBottomRightNeigh()->setUpperLeftNeigh(low_merging.back());
+                    t.getBottomRightNeigh()->setBottomLeftNeigh(low_merging.back());
+
+                }
+
             }else{
+                // trapezoid that has to be merged is in up_merging
 
-                upV.back()->setSegmentUp(cg3::Segment2d(upV.back()->getSegmentUp().p1(),
+                // update merging trapezoid's shape
+                up_merging.back()->setSegmentUp(cg3::Segment2d(up_merging.back()->getSegmentUp().p1(),
                                                            findIntersectionVerticalLine(t.getSegmentUp(), t.getRightPoint())));
-                upV.back()->setSegmentDown(cg3::Segment2d(upV.back()->getSegmentDown().p1(),
+                up_merging.back()->setSegmentDown(cg3::Segment2d(up_merging.back()->getSegmentDown().p1(),
                                                              findIntersectionVerticalLine(segment, t.getRightPoint())));
 
-                // NEIGHBOR
-                upV.back()->setUpperRightNeigh(t.getUpperRightNeigh());
-                upV.back()->setBottomRightNeigh(t.getBottomRightNeigh());
+                up_merging.back()->setRightPoint(t.getRightPoint());
+                //////////////////////
+                // NEIGHBOR SETTING //
+                //////////////////////
 
-                t.getUpperRightNeigh()->setUpperLeftNeigh(upV.back());
-                t.getUpperRightNeigh()->setBottomLeftNeigh(upV.back());
+                if (t.getUpperRightNeigh()->getId() == t.getBottomRightNeigh()->getId()){
+                    up_merging.back()->setUpperRightNeigh(t.getUpperRightNeigh());
+                    up_merging.back()->setBottomRightNeigh(t.getBottomRightNeigh());
+                }else if (Algorithm::pointIsAboveSegment(segment, t.getRightPoint())){
+                    up_merging.back()->setUpperRightNeigh(t.getUpperRightNeigh());
+                    up_merging.back()->setBottomRightNeigh(t.getBottomRightNeigh());
+                }else{
+                    up_merging.back()->setUpperRightNeigh(t.getUpperRightNeigh());
+                    up_merging.back()->setBottomRightNeigh(t.getUpperRightNeigh());
 
-                t.getBottomRightNeigh()->setUpperLeftNeigh(upV.back());
+                    // ci potrebbero essere problemi che t.getUpperRight abbia
+                    // due vicini diversi
+                    t.getUpperRightNeigh()->setUpperLeftNeigh(up_merging.back());
+                    t.getUpperRightNeigh()->setBottomLeftNeigh(up_merging.back());
+                }
             }
 
+
+            // creation of trapezoid that won't be merged
+
+            idLastTrap = trapezoids.back().getId();
             colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
             if (Algorithm::pointIsAboveSegment(segment, t.getLeftPoint())){
-                low = addNewTrapezoid();
-                low->setTrapezoid(++idLastTrap,
+                mirror_merge_t = addNewTrapezoid();
+                mirror_merge_t->setTrapezoid(++idLastTrap,
                                 t.getSegmentUp(),
                                 cg3::Segment2d(findIntersectionVerticalLine(segment, t.getLeftPoint()), findIntersectionVerticalLine(segment,t.getRightPoint())),
                                 t.getLeftPoint(), t.getRightPoint(),colorT);
 
-                upV.push_back(low);
+                newTrapsToReturn.push_back(mirror_merge_t);
 
-                // NEIGHBOR
-                low->setUpperLeftNeigh(t.getUpperLeftNeigh());
-                low->setBottomLeftNeigh(t.getUpperLeftNeigh());
-                low->setUpperRightNeigh(t.getUpperRightNeigh());
-                low->setBottomRightNeigh(t.getUpperRightNeigh());
 
-                t.getBottomLeftNeigh()->setBottomRightNeigh(low);
-                t.getBottomRightNeigh()->setBottomLeftNeigh(low);
+
+                //////////////////////
+                // NEIGHBOR SETTING //
+                //////////////////////
+                //TODO bisogna assegnare il meigh left a mirror, mettere il no_merge nella lista up_merge
+                if (t.getUpperLeftNeigh()->getId() == t.getBottomLeftNeigh()->getId()){
+
+                    mirror_merge_t->setUpperLeftNeigh(up_merging.back());
+                    mirror_merge_t->setBottomLeftNeigh(up_merging.back());
+
+
+                    if (t.getUpperRightNeigh()->getId() == t.getBottomRightNeigh()->getId()){
+                        mirror_merge_t->setUpperRightNeigh(t.getUpperRightNeigh());
+                        mirror_merge_t->setBottomRightNeigh(t.getBottomRightNeigh());
+
+                    }else{
+
+                        if (Algorithm::pointIsAboveSegment(segment, t.getRightPoint())){
+                            mirror_merge_t->setUpperRightNeigh(t.getUpperRightNeigh());
+                            mirror_merge_t->setBottomRightNeigh(t.getBottomRightNeigh());
+
+                            // devo modificare il neigh in alto a destra
+                            t.getUpperRightNeigh()->setUpperLeftNeigh(mirror_merge_t);
+                            t.getUpperRightNeigh()->setBottomLeftNeigh(mirror_merge_t);
+                        }else{
+                            mirror_merge_t->setUpperRightNeigh(t.getUpperRightNeigh());
+                            mirror_merge_t->setBottomRightNeigh(t.getUpperRightNeigh());
+                        }
+
+                   }
+
+                    up_merging.back()->setBottomRightNeigh(mirror_merge_t);
+                }else{
+                    mirror_merge_t->setUpperLeftNeigh(t.getUpperLeftNeigh());
+                    mirror_merge_t->setBottomLeftNeigh(up_merging.back());
+                    mirror_merge_t->setUpperRightNeigh(t.getUpperRightNeigh());
+                    mirror_merge_t->setBottomRightNeigh(t.getBottomRightNeigh());
+
+                    up_merging.back()->setUpperRightNeigh(mirror_merge_t);
+                    up_merging.back()->setBottomRightNeigh(mirror_merge_t);
+
+                    t.getUpperLeftNeigh()->setUpperRightNeigh(mirror_merge_t);
+                    t.getUpperLeftNeigh()->setBottomRightNeigh(mirror_merge_t);
+
+                    if ((t.getUpperRightNeigh() != t.getBottomRightNeigh()) && Algorithm::pointIsAboveSegment(segment, t.getRightPoint())){
+                         t.getUpperRightNeigh()->setUpperLeftNeigh(mirror_merge_t);
+                         t.getUpperRightNeigh()->setBottomLeftNeigh(mirror_merge_t);
+                    }
+
+                }
+
+                 up_merging.push_back(mirror_merge_t);
+
             }else{
-                low = addNewTrapezoid();
-                low->setTrapezoid(++idLastTrap,
+                mirror_merge_t = addNewTrapezoid();
+                mirror_merge_t->setTrapezoid(++idLastTrap,
                                 cg3::Segment2d(findIntersectionVerticalLine(segment, t.getLeftPoint()), findIntersectionVerticalLine(segment,t.getRightPoint())),
                                 t.getSegmentDown(),
                                 t.getLeftPoint(), t.getRightPoint(),colorT);
 
-                lowV.push_back(low);
 
-                //NEIGHBOR
-                low->setUpperLeftNeigh(t.getBottomLeftNeigh());
-                low->setBottomLeftNeigh(t.getBottomLeftNeigh());
-                low->setUpperRightNeigh(t.getBottomRightNeigh());
-                low->setBottomRightNeigh(t.getBottomRightNeigh());
 
-                t.getBottomLeftNeigh()->setUpperRightNeigh(low);
-                t.getBottomRightNeigh()->setUpperLeftNeigh(low);
+                newTrapsToReturn.push_back(mirror_merge_t);
 
+                //////////////////////
+                // NEIGHBOR SETTING //
+                //////////////////////
+                if (t.getUpperLeftNeigh()->getId() == t.getBottomLeftNeigh()->getId()){
+                    mirror_merge_t->setUpperLeftNeigh(low_merging.back());
+                    mirror_merge_t->setBottomLeftNeigh(low_merging.back());
+
+
+                    if (t.getUpperRightNeigh()->getId() == t.getBottomRightNeigh()->getId()){
+                        mirror_merge_t->setUpperRightNeigh(t.getUpperRightNeigh());
+                        mirror_merge_t->setBottomRightNeigh(t.getBottomRightNeigh());
+                    }else{
+                        if (Algorithm::pointIsAboveSegment(segment, t.getRightPoint())){
+                            mirror_merge_t->setUpperRightNeigh(t.getBottomRightNeigh());
+                            mirror_merge_t->setBottomRightNeigh(t.getBottomRightNeigh());
+                        }else{
+                            mirror_merge_t->setUpperRightNeigh(t.getUpperRightNeigh());
+                            mirror_merge_t->setBottomRightNeigh(t.getBottomRightNeigh());
+
+                            t.getBottomRightNeigh()->setUpperLeftNeigh(mirror_merge_t);
+                            t.getBottomRightNeigh()->setBottomLeftNeigh(mirror_merge_t);
+                        }
+
+                    }
+
+                    low_merging.back()->setUpperRightNeigh(mirror_merge_t);
+                }else{
+                    mirror_merge_t->setUpperLeftNeigh(low_merging.back());
+                    mirror_merge_t->setBottomLeftNeigh(t.getBottomLeftNeigh());
+                    mirror_merge_t->setUpperRightNeigh(t.getUpperRightNeigh());
+                    mirror_merge_t->setBottomRightNeigh(t.getBottomRightNeigh());
+
+                    low_merging.back()->setUpperRightNeigh(mirror_merge_t);
+                    low_merging.back()->setBottomRightNeigh(mirror_merge_t);
+
+                    t.getBottomLeftNeigh()->setUpperRightNeigh(mirror_merge_t);
+                    t.getBottomLeftNeigh()->setBottomRightNeigh(mirror_merge_t);
+
+                    if ((t.getUpperRightNeigh() != t.getBottomRightNeigh()) && !Algorithm::pointIsAboveSegment(segment, t.getRightPoint())){
+                        t.getBottomRightNeigh()->setUpperLeftNeigh(mirror_merge_t);
+                        t.getBottomRightNeigh()->setBottomLeftNeigh(mirror_merge_t);
+                    }
+
+                }
+
+                low_merging.push_back(mirror_merge_t);
             }
 
-//            if (i == 1)
-//                break;
+
+
+//            Algorithm::printNeigh(*this);
         }else{
 
             idLastTrap = trapezoids.back().getId();
 
-            d = addNewTrapezoid();
-            e = addNewTrapezoid();
+            no_merge_right_t = addNewTrapezoid();
+            right = addNewTrapezoid();
 
-            splitInThreeRight(d,e,lowV,upV,t,segment, idLastTrap);
+            splitInThreeRight(no_merge_right_t, right,low_merging, up_merging, t, segment, idLastTrap);
 
-//            if (Algorithm::pointIsAboveSegment(segment, t.getLeftPoint())){
-//                newTrapsToReturn.push_back(lowV.back());
-//            }else{
-//                newTrapsToReturn.push_back(upV.back());
-//            }
 
-            newTrapsToReturn.push_back(d);
-            newTrapsToReturn.push_back(e);
-            // neighbor
+            newTrapsToReturn.push_back(no_merge_right_t);
+            newTrapsToReturn.push_back(right);
 
-            e->setUpperRightNeigh(t.getUpperRightNeigh());
-            e->setBottomRightNeigh(t.getBottomRightNeigh());
+
+            //////////////////////
+            // NEIGHBOR SETTING //
+            //       RIGHT      //
+            //////////////////////
+
+            right->setUpperRightNeigh(t.getUpperRightNeigh());
+            right->setBottomRightNeigh(t.getBottomRightNeigh());
             if (Algorithm::pointIsAboveSegment(segment, t.getLeftPoint())){
-                e->setUpperLeftNeigh(d);
-                e->setBottomLeftNeigh(lowV.back());
+                right->setUpperLeftNeigh(no_merge_right_t);
+                right->setBottomLeftNeigh(low_merging.back());
             }else{
-                e->setUpperLeftNeigh(upV.back());
-                e->setBottomLeftNeigh(d);
+                right->setUpperLeftNeigh(up_merging.back());
+                right->setBottomLeftNeigh(no_merge_right_t);
             }
 
             if (t.getBottomRightNeigh() != nullptr && t.getUpperRightNeigh() != nullptr){
-                if (t.getBottomRightNeigh()->getId() == t.getUpperRightNeigh()->getId()){
-                    if (Algorithm::pointIsAboveSegment(segment, t.getLeftPoint())){
-                        t.getUpperRightNeigh()->setBottomLeftNeigh(e);
+                if (t.getBottomRightNeigh() == t.getUpperRightNeigh()){
+                    if (t.getId() == t.getUpperRightNeigh()->getUpperLeftNeigh()->getId()){
+                        t.getUpperRightNeigh()->setUpperLeftNeigh(right);
                     }else{
-                        t.getUpperRightNeigh()->setUpperLeftNeigh(e);
+                        t.getUpperRightNeigh()->setBottomLeftNeigh(right);
                     }
                 }else{
-                    t.getUpperRightNeigh()->setUpperLeftNeigh(e);
-                    t.getUpperRightNeigh()->setBottomLeftNeigh(e);
+                    t.getUpperRightNeigh()->setUpperLeftNeigh(right);
+                    t.getUpperRightNeigh()->setBottomLeftNeigh(right);
 
-                    t.getBottomRightNeigh()->setUpperLeftNeigh(e);
-                    t.getBottomRightNeigh()->setBottomLeftNeigh(e);
+                    t.getBottomRightNeigh()->setUpperLeftNeigh(right);
+                    t.getBottomRightNeigh()->setBottomLeftNeigh(right);
                 }
             }
 
-            //D neighbor
-            d->setUpperRightNeigh(e);
-            d->setBottomRightNeigh(e);
+            //////////////////////
+            // NEIGHBOR SETTING //
+            //  NO_MERGE_RIGHT  //
+            //////////////////////
+            no_merge_right_t->setUpperRightNeigh(right);
+            no_merge_right_t->setBottomRightNeigh(right);
+
             if (t.getUpperLeftNeigh()->getId() == t.getBottomLeftNeigh()->getId()){
                 if (Algorithm::pointIsAboveSegment(segment, t.getLeftPoint())){
-                    d->setUpperLeftNeigh(t.getUpperLeftNeigh());
-                    d->setBottomLeftNeigh(t.getBottomLeftNeigh());
+                    no_merge_right_t->setUpperLeftNeigh(up_merging.back());
+                    no_merge_right_t->setBottomLeftNeigh(up_merging.back());
 
-                   // t.getBottomLeftNeigh()->setUpperRightNeigh(d);
-                    t.getBottomLeftNeigh()->setBottomRightNeigh(d);
+                    up_merging.back()->setBottomRightNeigh(no_merge_right_t);
                 }else{
-                    d->setUpperLeftNeigh(t.getUpperLeftNeigh());
-                    d->setBottomLeftNeigh(t.getBottomLeftNeigh());
+                    no_merge_right_t->setUpperLeftNeigh(low_merging.back());
+                    no_merge_right_t->setBottomLeftNeigh(low_merging.back());
 
-                    t.getUpperLeftNeigh()->setUpperRightNeigh(d);
-                    //t.getUpperLeftNeigh()->setBottomRightNeigh(d);
-
+                    low_merging.back()->setUpperRightNeigh(no_merge_right_t);
                 }
             }else{
                 if (Algorithm::pointIsAboveSegment(segment, t.getLeftPoint())){
-                    d->setUpperLeftNeigh(t.getUpperLeftNeigh());
-                    d->setBottomLeftNeigh(t.getBottomLeftNeigh());
+                    no_merge_right_t->setUpperLeftNeigh(t.getUpperLeftNeigh());
+                    no_merge_right_t->setBottomLeftNeigh(up_merging.back());
 
-                    t.getBottomLeftNeigh()->setUpperRightNeigh(d);
-                    t.getBottomLeftNeigh()->setBottomRightNeigh(d);
-                    t.getUpperLeftNeigh()->setUpperRightNeigh(d);
-                    t.getUpperLeftNeigh()->setBottomRightNeigh(d);
+                    up_merging.back()->setUpperRightNeigh(no_merge_right_t);
+                    up_merging.back()->setBottomRightNeigh(no_merge_right_t);
+                    t.getUpperLeftNeigh()->setUpperRightNeigh(no_merge_right_t);
+                    t.getUpperLeftNeigh()->setBottomRightNeigh(no_merge_right_t);
+
                 }else{
-                    d->setUpperLeftNeigh(t.getUpperLeftNeigh());
-                    d->setBottomLeftNeigh(t.getBottomLeftNeigh());
+                    no_merge_right_t->setUpperLeftNeigh(low_merging.back());
+                    no_merge_right_t->setBottomLeftNeigh(t.getBottomLeftNeigh());
 
-                    t.getUpperLeftNeigh()->setUpperRightNeigh(d);
-                    t.getUpperLeftNeigh()->setBottomRightNeigh(d);
-                    t.getBottomLeftNeigh()->setUpperRightNeigh(d);
-                    t.getBottomLeftNeigh()->setBottomRightNeigh(d);
+                    low_merging.back()->setUpperRightNeigh(no_merge_right_t);
+                    low_merging.back()->setBottomRightNeigh(no_merge_right_t);
+                    t.getBottomLeftNeigh()->setUpperRightNeigh(no_merge_right_t);
+                    t.getBottomLeftNeigh()->setBottomRightNeigh(no_merge_right_t);
 
                 }
             }
 
-
             if (Algorithm::pointIsAboveSegment(segment, t.getLeftPoint())){
-                //t.getBottomLeftNeigh()->setBottomRightNeigh(d);
-
-                lowV.back()->setUpperRightNeigh(e);
-                lowV.back()->setBottomRightNeigh(e);
+                low_merging.back()->setUpperRightNeigh(right);
+                low_merging.back()->setBottomRightNeigh(right);
             }else{
-                //t.getBottomLeftNeigh()->setUpperRightNeigh(d);
-
-                upV.back()->setUpperRightNeigh(e);
-                upV.back()->setBottomRightNeigh(e);
+                up_merging.back()->setUpperRightNeigh(right);
+                up_merging.back()->setBottomRightNeigh(right);
             }
+
+//            Algorithm::printNeigh(*this);
         }
     }
 
     return newTrapsToReturn;
 
+}
+
+void TrapMap::compareNeigh(){
+    bool neig = true;
+    std::string s;
+    for (Trapezoid t : getTrapezoids()){
+        if (neig){
+            s += "ID: ";
+            s += std::to_string(t.getId());
+            if (t.getUpperLeftNeigh() != nullptr && t.getBottomLeftNeigh() != nullptr){
+                s += "U-L ";
+                s += std::to_string(t.getUpperLeftNeigh()->getId());
+                s += " B-L ";
+                s += std::to_string(t.getBottomLeftNeigh()->getId());
+            }
+            else{
+             s += "U-L NULL B-L NULL";
+            }
+
+            if (t.getUpperRightNeigh() != nullptr && t.getBottomRightNeigh() != nullptr){
+
+            s += "U-R ";
+            s += std::to_string(t.getUpperRightNeigh()->getId());
+            s += " B-R ";
+            s += std::to_string(t.getBottomRightNeigh()->getId());
+            }
+            else
+                s += "U-R NULL B-R NULL";
+        }
+   }
+
+    if (prev != ""){
+        if (s.compare(prev) == 0){
+            std::cout << "i neigh sono uguali" << std::endl;
+        }else{
+            std::cout << "i neigh sono diversi" << std::endl;
+        }
+    }
+
+    prev = s;
+//        std::cout << s << std::endl;
 }

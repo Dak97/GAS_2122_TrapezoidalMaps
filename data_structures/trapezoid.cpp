@@ -7,6 +7,7 @@ Trapezoid::Trapezoid(){
     leftPoint = cg3::Point2d(-BB,-BB);
     rightPoint = cg3::Point2d(BB,-BB);
     color = cg3::Color(255,255,255);
+    highlighted = false;
     upperLeftNeigh = nullptr;
     bottomLeftNeigh = nullptr;
     upperRightNeigh = nullptr;
@@ -21,7 +22,8 @@ Trapezoid::Trapezoid(int id, cg3::Segment2d segmentUp, cg3::Segment2d segmentDow
     segmentDown(segmentDown),
     leftPoint(leftP),
     rightPoint(rightP),
-    color(color)
+    color(color),
+    highlighted(false)
 
 {
 
@@ -39,7 +41,8 @@ Trapezoid::Trapezoid(int id, cg3::Segment2d &segmentUp, cg3::Segment2d &segmentD
     bottomLeftNeigh(bottomLeftN),
     upperRightNeigh(upperRightN),
     bottomRightNeigh(bottomRightN),
-    color(color)
+    color(color),
+    highlighted(false)
 
 {
 
@@ -173,4 +176,27 @@ DagNode *Trapezoid::getRefToDag() const
 void Trapezoid::setRefToDag(DagNode *newRefToDag)
 {
     refToDag = newRefToDag;
+}
+
+bool Trapezoid::getHighlighted() const
+{
+
+    return highlighted;
+}
+
+void Trapezoid::setHighlighted(bool newHighlighted)
+{
+    highlighted = newHighlighted;
+}
+bool operator==(Trapezoid& l, Trapezoid& r){
+    if (l.getId() == r.getId())
+        return true;
+    else
+        return false;
+}
+bool operator!=(Trapezoid& l, Trapezoid& r){
+    if (l.getId() != r.getId())
+        return true;
+    else
+        return false;
 }

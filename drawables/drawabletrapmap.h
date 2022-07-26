@@ -21,6 +21,7 @@ public:
     void draw() const;
     cg3::Point3d sceneCenter() const;
     double sceneRadius() const;
+    void highlightTrapezoid(Trapezoid* t) const;
 
     const double bb;
 

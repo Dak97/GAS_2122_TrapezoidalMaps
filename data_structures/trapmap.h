@@ -27,16 +27,20 @@ public:
 
     void deleteTrapezoidWithId(const int id);
     void deleteTrapezoidByRef(std::vector<Trapezoid*> traps);
+    void deleteTrapezoidByRef(Trapezoid* trap);
     Trapezoid* addNewTrapezoid();
     void init();
 
     void clear();
 
+    void compareNeigh();
 private:
 
     Trapezoid boundingBox;
     // vettore di trapezoidi
     std::list<Trapezoid> trapezoids;
+
+    std::string prev;
 
 
     cg3::Point2d findIntersectionVerticalLine(const cg3::Segment2d& s, const cg3::Point2d& px);
