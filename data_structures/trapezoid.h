@@ -66,6 +66,15 @@ public:
     bool getHighlighted() const;
     void setHighlighted(bool newHighlighted);
 
+    bool isLeftDegenerate();
+    bool isRightDegenerate();
+
+    bool sameLeftNeighbor();
+    bool sameRightNeighbor();
+
+    const std::list<Trapezoid>::iterator &getRefToIter() const;
+    void setRefToIter(const std::list<Trapezoid>::iterator &newRefToIter);
+
 private:
     int id;
 
@@ -82,6 +91,7 @@ private:
     bool highlighted;
 
     DagNode* refToDag;
+    std::list<Trapezoid>::iterator refToIter;
 
 };
 

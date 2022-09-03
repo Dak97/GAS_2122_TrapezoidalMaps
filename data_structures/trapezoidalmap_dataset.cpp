@@ -68,6 +68,8 @@ size_t TrapezoidalMapDataset::addSegment(const cg3::Segment2d& segment, bool& se
         bool foundPoint2;
         size_t id2 = findPoint(orderedSegment.p2(), foundPoint2);
 
+//        if (foundPoint1 || foundPoint2)
+//            generalPosition = false;
         if (!foundPoint1 && xCoordSet.find(orderedSegment.p1().x()) != xCoordSet.end()) {
             generalPosition = false;
         }

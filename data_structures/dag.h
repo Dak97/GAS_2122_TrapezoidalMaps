@@ -8,26 +8,19 @@
 class Dag
 {
 public:
-    Dag(DrawableTrapMap& drawableTrapMap, Trapezoid *bb);
+    Dag(Trapezoid *bb);
 
-    void updateDag(std::vector<Trapezoid*>& traps, DagNode* trapNode, const cg3::Segment2d& segment);
-    void updateDag2(std::vector<Trapezoid*> newTraps, std::vector<Trapezoid*> trapsToDelete, const cg3::Segment2d& segment);
-    bool isLeftNode(DagNode *node);
+    void init(Trapezoid *bb);
     DagNode* createNewDagNode(DagNode::TypeNode typeObj, void *object);
-    std::pair<DagNode*, DagNode*> query(const cg3::Segment2d segment);
-    std::vector<Trapezoid*> followSegment(const cg3::Segment2d &segment, DagNode* trap);
     DagNode* getRoot() const;
     void clearDag();
-    void init(Trapezoid *bb);
+
+    void updateDagSingleSplit(std::vector<Trapezoid*>& traps, DagNode* trapNode, const cg3::Segment2d& segment, bool& left_coincident, bool& right_coincident);
+    void updateDagMultipleSplit(std::vector<Trapezoid*>& newTraps, std::vector<Trapezoid*>& trapsToDelete, const cg3::Segment2d& segment, bool& left_coincident, bool& right_coincident);
 
 private:
-    DrawableTrapMap drawableTrapMap;
     DagNode *root;
     std::list<DagNode*> nodes;
-
-    bool pointIsAbove(cg3::Segment2d* s, cg3::Point2d p);
-
-
 };
 
 #endif // DAG_H

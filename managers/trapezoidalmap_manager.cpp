@@ -38,7 +38,7 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
     firstPointSelectedSize(5),
     isFirstPointSelected(false),
     drawableTrapMap(BOUNDINGBOX),
-    dag(drawableTrapMap, drawableTrapMap.getTrapezoidWithId(0)),
+    dag(drawableTrapMap.getFirstTrapezoid()),
     prevHighLighted(nullptr)
 {
     //NOTE 1: you probably need to initialize some objects in the constructor. You
@@ -201,8 +201,12 @@ void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& seg
     //structures, you could save directly the point (Point2d) in each trapezoid (it is fine).
 
     prevHighLighted = nullptr;
+//    if (segment.p1().x() == -935504 ){
+//        std::cout << "trovato" << std::endl;
+//    }
+//    std::cout << segment.p1().x() << " " <<segment.p1().y() << " " << segment.p2().x() << " " <<segment.p2().y() << std::endl;
     Algorithm::buildTrapMapDag(dag, drawableTrapMap, segment);
-    std::cout << "nuovo" << std::endl;
+
 //    Algorithm::printDag(dag);
 //    Algorithm::printNeigh(drawableTrapMap);
 
@@ -212,7 +216,7 @@ void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& seg
 
     //You can delete this line after you implement the algorithm: it is
     //just needed to suppress the unused-variable warning
-    CG3_SUPPRESS_WARNING(segment);
+//    CG3_SUPPRESS_WARNING(segment);
 }
 
 /**
@@ -252,20 +256,21 @@ void TrapezoidalMapManager::queryTrapezoidalMap(const cg3::Point2d& queryPoint)
 
     //#####################################################################
 
-    drawableTrapMap.compareNeigh();
+//    drawableTrapMap.compareNeigh();
     if (prevHighLighted != nullptr){
 
         prevHighLighted->setHighlighted(false);
-        if (prevHighLighted->getUpperLeftNeigh() != nullptr)
-            prevHighLighted->getUpperLeftNeigh()->setHighlighted(false);
-        if (prevHighLighted->getBottomLeftNeigh() != nullptr)
-            prevHighLighted->getBottomLeftNeigh()->setHighlighted(false);
-        if (prevHighLighted->getUpperRightNeigh() != nullptr)
-            prevHighLighted->getUpperRightNeigh()->setHighlighted(false);
-        if (prevHighLighted->getBottomRightNeigh() != nullptr)
-            prevHighLighted->getBottomRightNeigh()->setHighlighted(false);
+//        if (prevHighLighted->getUpperLeftNeigh() != nullptr)
+//            prevHighLighted->getUpperLeftNeigh()->setHighlighted(false);
+//        if (prevHighLighted->getBottomLeftNeigh() != nullptr)
+//            prevHighLighted->getBottomLeftNeigh()->setHighlighted(false);
+//        if (prevHighLighted->getUpperRightNeigh() != nullptr)
+//            prevHighLighted->getUpperRightNeigh()->setHighlighted(false);
+//        if (prevHighLighted->getBottomRightNeigh() != nullptr)
+//            prevHighLighted->getBottomRightNeigh()->setHighlighted(false);
     }
-    DagNode* p = Algorithm::query(dag, queryPoint);
+
+    DagNode* p = Algorithm::query(dag, cg3::Segment2d(queryPoint, queryPoint));
 
     if (p->getData().type == DagNode::TypeNode::Trapezoid){
         Trapezoid* t = (Trapezoid*)p->getData().objj;
@@ -275,18 +280,19 @@ void TrapezoidalMapManager::queryTrapezoidalMap(const cg3::Point2d& queryPoint)
 
 //        Algorithm::printNeigh(drawableTrapMap);
 
+
         prevHighLighted = t;
 
         drawableTrapMap.highlightTrapezoid(t);
 
-        if (prevHighLighted->getUpperLeftNeigh() != nullptr)
-            drawableTrapMap.highlightTrapezoid(t->getUpperLeftNeigh());
-        if (prevHighLighted->getBottomLeftNeigh() != nullptr)
-            drawableTrapMap.highlightTrapezoid(t->getBottomLeftNeigh());
-        if (prevHighLighted->getUpperRightNeigh() != nullptr)
-             drawableTrapMap.highlightTrapezoid(t->getUpperRightNeigh());
-        if (prevHighLighted->getBottomRightNeigh() != nullptr)
-            drawableTrapMap.highlightTrapezoid(t->getBottomRightNeigh());
+//        if (prevHighLighted->getUpperLeftNeigh() != nullptr)
+//            drawableTrapMap.highlightTrapezoid(t->getUpperLeftNeigh());
+//        if (prevHighLighted->getBottomLeftNeigh() != nullptr)
+//            drawableTrapMap.highlightTrapezoid(t->getBottomLeftNeigh());
+//        if (prevHighLighted->getUpperRightNeigh() != nullptr)
+//             drawableTrapMap.highlightTrapezoid(t->getUpperRightNeigh());
+//        if (prevHighLighted->getBottomRightNeigh() != nullptr)
+//            drawableTrapMap.highlightTrapezoid(t->getBottomRightNeigh());
     }else{
         std::cout << "Errore: Il tipo non è un Trapezoide\n";
     }
@@ -309,7 +315,7 @@ void TrapezoidalMapManager::queryTrapezoidalMap(const cg3::Point2d& queryPoint)
 
     //You can delete this line after you implement the algorithm: it is
     //just needed to suppress the unused-variable warning
-    CG3_SUPPRESS_WARNING(queryPoint);
+//    CG3_SUPPRESS_WARNING(queryPoint);
 }
 
 /**
@@ -320,11 +326,20 @@ clearTrapezoidalMap()
 {
     //---------------------------------------------------------------------
     //Clear here your trapezoidal map data structure.
+
+    // delete all trapezoids in the trapezoidal map
     drawableTrapMap.clear();
+
+    // delete all nodes in dag
     dag.clearDag();
 
+    // initialize trapezoidal map
     drawableTrapMap.init();
-    dag.init(drawableTrapMap.getTrapezoidWithId(0));
+
+    // initialize dag
+    dag.init(drawableTrapMap.getFirstTrapezoid());
+
+    // reset previous highlighted trapezoid
     prevHighLighted = nullptr;
 
     //#####################################################################
@@ -680,7 +695,6 @@ void TrapezoidalMapManager::on_clearSegmentsButton_clicked() //Do not write code
     //Clear current data
     clearTrapezoidalMap();
     drawableTrapezoidalMapDataset.clear();
-//    drawableTrapMap.clear();
 
     updateCanvas();
 

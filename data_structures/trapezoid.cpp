@@ -1,4 +1,5 @@
 #include "trapezoid.h"
+#include "algorithm.h"
 
 Trapezoid::Trapezoid(){
     id = 0;
@@ -188,7 +189,7 @@ void Trapezoid::setHighlighted(bool newHighlighted)
 {
     highlighted = newHighlighted;
 }
-bool operator==(Trapezoid& l, Trapezoid& r){
+bool operator==(Trapezoid& l, Trapezoid& r)  {
     if (l.getId() == r.getId())
         return true;
     else
@@ -199,4 +200,44 @@ bool operator!=(Trapezoid& l, Trapezoid& r){
         return true;
     else
         return false;
+}
+bool Trapezoid::isLeftDegenerate(){
+    if (Algorithm::pointsAreEquals(segmentUp.p1(), segmentDown.p1()))
+        return true;
+    else
+        return false;
+}
+bool Trapezoid::isRightDegenerate(){
+    if (Algorithm::pointsAreEquals(segmentUp.p2(), segmentDown.p2()))
+        return true;
+    else
+        return false;
+}
+
+bool Trapezoid::sameLeftNeighbor(){
+    if (upperLeftNeigh == nullptr && bottomLeftNeigh == nullptr)
+        return true;
+    else if (upperLeftNeigh->getId() == bottomLeftNeigh->getId())
+        return true;
+    else
+        return false;
+}
+bool Trapezoid::sameRightNeighbor(){
+    if (upperRightNeigh == nullptr && bottomRightNeigh == nullptr)
+        return true;
+
+    if (upperRightNeigh->getId() == bottomRightNeigh->getId())
+        return true;
+
+    return false;
+}
+
+const std::list<Trapezoid>::iterator &Trapezoid::getRefToIter() const
+{
+    return refToIter;
+}
+
+void Trapezoid::setRefToIter(const std::list<Trapezoid>::iterator &newRefToIter)
+{
+    refToIter = newRefToIter;
 }
