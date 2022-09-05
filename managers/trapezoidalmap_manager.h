@@ -62,6 +62,7 @@ private:
 
     DrawableTrapMap drawableTrapMap;
     Dag dag;
+    Trapezoid* prevHighLighted;
 
 
     //#####################################################################

@@ -1,16 +1,19 @@
 #include "trapezoid.h"
+#include "algorithm.h"
 
 Trapezoid::Trapezoid(){
+    id = 0;
     segmentUp = cg3::Segment2d(cg3::Point2d(-BB,BB),cg3::Point2d(BB,BB));
     segmentDown = cg3::Segment2d(cg3::Point2d(-BB,-BB),cg3::Point2d(BB,-BB));
-    leftPoint = cg3::Point2d(-BB,BB);
-    rightPoint = cg3::Point2d(BB,BB);
+    leftPoint = cg3::Point2d(-BB,-BB);
+    rightPoint = cg3::Point2d(BB,-BB);
     color = cg3::Color(255,255,255);
-    id = 0;
+    highlighted = false;
     upperLeftNeigh = nullptr;
     bottomLeftNeigh = nullptr;
     upperRightNeigh = nullptr;
     bottomRightNeigh = nullptr;
+    refToDag = nullptr;
 }
 
 Trapezoid::Trapezoid(int id, cg3::Segment2d segmentUp, cg3::Segment2d segmentDown,
@@ -20,7 +23,8 @@ Trapezoid::Trapezoid(int id, cg3::Segment2d segmentUp, cg3::Segment2d segmentDow
     segmentDown(segmentDown),
     leftPoint(leftP),
     rightPoint(rightP),
-    color(color)
+    color(color),
+    highlighted(false)
 
 {
 
@@ -38,7 +42,8 @@ Trapezoid::Trapezoid(int id, cg3::Segment2d &segmentUp, cg3::Segment2d &segmentD
     bottomLeftNeigh(bottomLeftN),
     upperRightNeigh(upperRightN),
     bottomRightNeigh(bottomRightN),
-    color(color)
+    color(color),
+    highlighted(false)
 
 {
 
@@ -151,4 +156,88 @@ void Trapezoid::setNeighbor(Trapezoid *newUpperLeftNeigh, Trapezoid *newBottomLe
     bottomLeftNeigh = newBottomLeftNeigh;
     upperRightNeigh = newUpperRightNeigh;
     bottomRightNeigh = newBottomRightNeigh;
+}
+
+void Trapezoid::setTrapezoid(int _id, cg3::Segment2d _segmentUp, cg3::Segment2d _segmentDown,
+                  cg3::Point2d _leftP, cg3::Point2d _rightP, const cg3::Color _color)
+{
+    id = _id;
+    segmentUp = _segmentUp;
+    segmentDown = _segmentDown;
+    leftPoint = _leftP;
+    rightPoint = _rightP;
+    color = _color;
+}
+
+DagNode *Trapezoid::getRefToDag() const
+{
+    return refToDag;
+}
+
+void Trapezoid::setRefToDag(DagNode *newRefToDag)
+{
+    refToDag = newRefToDag;
+}
+
+bool Trapezoid::getHighlighted() const
+{
+
+    return highlighted;
+}
+
+void Trapezoid::setHighlighted(bool newHighlighted)
+{
+    highlighted = newHighlighted;
+}
+bool operator==(Trapezoid& l, Trapezoid& r)  {
+    if (l.getId() == r.getId())
+        return true;
+    else
+        return false;
+}
+bool operator!=(Trapezoid& l, Trapezoid& r){
+    if (l.getId() != r.getId())
+        return true;
+    else
+        return false;
+}
+bool Trapezoid::isLeftDegenerate(){
+    if (Algorithm::pointsAreEquals(segmentUp.p1(), segmentDown.p1()))
+        return true;
+    else
+        return false;
+}
+bool Trapezoid::isRightDegenerate(){
+    if (Algorithm::pointsAreEquals(segmentUp.p2(), segmentDown.p2()))
+        return true;
+    else
+        return false;
+}
+
+bool Trapezoid::sameLeftNeighbor(){
+    if (upperLeftNeigh == nullptr && bottomLeftNeigh == nullptr)
+        return true;
+    else if (upperLeftNeigh->getId() == bottomLeftNeigh->getId())
+        return true;
+    else
+        return false;
+}
+bool Trapezoid::sameRightNeighbor(){
+    if (upperRightNeigh == nullptr && bottomRightNeigh == nullptr)
+        return true;
+
+    if (upperRightNeigh->getId() == bottomRightNeigh->getId())
+        return true;
+
+    return false;
+}
+
+const std::list<Trapezoid>::iterator &Trapezoid::getRefToIter() const
+{
+    return refToIter;
+}
+
+void Trapezoid::setRefToIter(const std::list<Trapezoid>::iterator &newRefToIter)
+{
+    refToIter = newRefToIter;
 }

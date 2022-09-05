@@ -5,6 +5,8 @@
 
 #include <cg3/utilities/color.h>
 
+#include "data_structures/dagnode.h"
+
 #define BB 1e+6
 
 class Trapezoid {
@@ -55,6 +57,24 @@ public:
     void setNeighbor(Trapezoid *newUpperLeftNeigh, Trapezoid *newBottomLeftNeigh,
                      Trapezoid *newUpperRightNeigh, Trapezoid *newBottomRightNeigh);
 
+    void setTrapezoid(int id, cg3::Segment2d segmentUp, cg3::Segment2d segmentDown,
+                         cg3::Point2d leftP, cg3::Point2d rightP, const cg3::Color color);
+
+    DagNode *getRefToDag() const;
+    void setRefToDag(DagNode *newRefToDag);
+
+    bool getHighlighted() const;
+    void setHighlighted(bool newHighlighted);
+
+    bool isLeftDegenerate();
+    bool isRightDegenerate();
+
+    bool sameLeftNeighbor();
+    bool sameRightNeighbor();
+
+    const std::list<Trapezoid>::iterator &getRefToIter() const;
+    void setRefToIter(const std::list<Trapezoid>::iterator &newRefToIter);
+
 private:
     int id;
 
@@ -68,6 +88,10 @@ private:
     Trapezoid* upperRightNeigh;
     Trapezoid* bottomRightNeigh;
     cg3::Color color;
+    bool highlighted;
+
+    DagNode* refToDag;
+    std::list<Trapezoid>::iterator refToIter;
 
 };
 
