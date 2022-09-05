@@ -11,7 +11,6 @@ namespace Algorithm
     void buildTrapMapDag(Dag& dag, TrapMap& trapMap, const cg3::Segment2d& segment);
     DagNode* query(Dag& dag, const cg3::Segment2d& segment);
     std::vector<Trapezoid*> followSegment(const cg3::Segment2d &segment, DagNode* trap);
-
     bool pointIsAboveSegment(cg3::Segment2d segment, cg3::Point2d point);
     bool pointsAreEquals(const cg3::Point2d& p1, const cg3::Point2d& p2);
 

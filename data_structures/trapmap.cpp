@@ -2,51 +2,73 @@
 
 #include <cg3/viewer/opengl_objects/opengl_objects2.h>
 #include "algorithm.h"
-
+/**
+ * @brief TrapMap::TrapMap Default constructor of the trapezoidal map object
+ */
 TrapMap::TrapMap()
 {
     // initializie trapezoidal map
     init();
 }
-
+/**
+ * @brief TrapMap::init Add the default trapezoid (corrisponding to the bounding box) to the trapezoidal map
+ */
 void TrapMap::init(){
     addNewTrapezoid();
 }
 
+/**
+ * @brief TrapMap::getTrapezoids Return the list of the trapezoids in the trapezoidal map
+ * @return List of the trapezoids
+ */
 const std::list<Trapezoid> TrapMap::getTrapezoids() const{
     return trapezoids;
 }
 
+/**
+ * @brief TrapMap::getFirstTrapezoid Return the first trapezoid in the list of the trapezoids
+ * @return The first trapezoid
+ */
 Trapezoid* TrapMap::getFirstTrapezoid(){
     std::list<Trapezoid>::iterator it=trapezoids.begin();
     return &*it;
 }
 
+/**
+ * @brief TrapMap::deleteTrapezoidByRef Elimination of the trapezoids in the list of the trapezoids
+ * @param traps List of the trapezoids that have to be deleted
+ */
 void TrapMap::deleteTrapezoidByRef(std::vector<Trapezoid*> traps){
     for (const Trapezoid* t : traps){
         trapezoids.erase(t->getRefToIter());
     }
 }
-
+/**
+ * @brief TrapMap::clear Elimination of the entire list of the trapezoids
+ */
 void TrapMap::clear(){
     trapezoids.clear();
 }
 
+/**
+  * @brief TrapMap::addNewTrapezoid Insertion of a default trapezoid in the list of trapezoids
+  * @return The new trapezoid inserted
+  */
  Trapezoid* TrapMap::addNewTrapezoid(){
-    //inserisco un nuovo trapezoide di default
+    // add a default trapezoid to the list
     trapezoids.push_back(Trapezoid());
 
     trapezoids.back().setRefToIter(--(trapezoids.end()));
 
     return  &*(--(trapezoids.end()));
 }
-
-// devo trovare il punto di intersezione tra il segmento e la linea verticale
-// rappresentata dalla sua coordinata x
+ /**
+ * @brief TrapMap::findIntersectionVerticalLine Find the point that intersect a segment and x point coordinate
+ * @param s The segment
+ * @param px x point coordinate
+ * @return The point intersected
+ */
 cg3::Point2d TrapMap::findIntersectionVerticalLine(const cg3::Segment2d& s, const cg3::Point2d& px){
-//    cg3::Point2d p1 = s.p1();
-//    cg3::Point2d p2 = s.p2();
-//    cg3::Point2d intersection;
 
     double a, b, c, y;
 

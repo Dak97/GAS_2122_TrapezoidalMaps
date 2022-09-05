@@ -1,24 +1,43 @@
 #include "dag.h"
 #include "algorithm.h"
 
+/**
+ * @brief Dag::Dag Default constructor for the DAG data structure
+ * @param bb First trapezoid inserted in the DAG (root)
+ */
 Dag::Dag(Trapezoid *bb) : root(createNewDagNode(DagNode::TypeNode::Trapezoid, bb)){
     nodes.push_back(root);
 }
-
+/**
+ * @brief Dag::init Initialization of the DAG
+ * @param bb First trapezoid inserted in the DAG (root)
+ */
 void Dag::init(Trapezoid *bb){
     root = createNewDagNode(DagNode::TypeNode::Trapezoid, bb);
     nodes.push_back(root);
 }
-
+/**
+ * @brief Dag::createNewDagNode Creation of a DAG node
+ * @param typeObj Type of the object that the node will contain
+ * @param object A reference to the object
+ * @return DAG node contatining the object
+ */
 DagNode* Dag::createNewDagNode(DagNode::TypeNode typeObj, void *object){
     DagNode *newNode = new DagNode(typeObj, object);
     return newNode;
 }
 
+/**
+ * @brief Dag::getRoot Return a reference of the root of the DAG
+ * @return  A DAG node
+ */
 DagNode* Dag::getRoot() const {
     return root;
 }
 
+/**
+ * @brief Dag::clearDag Free all the objects that are not trapezoid in all nodes
+ */
 void Dag::clearDag(){
     for(DagNode *n: nodes){
         if (n->getData().type != DagNode::TypeNode::Trapezoid){
@@ -28,7 +47,14 @@ void Dag::clearDag(){
     }
     nodes.clear();
 }
-
+/**
+ * @brief Dag::updateDagSingleSplit
+ * @param traps
+ * @param trapNode
+ * @param segment
+ * @param left_coincident
+ * @param right_coincident
+ */
 void Dag::updateDagSingleSplit(std::vector<Trapezoid*>& traps, DagNode* trapNode, const cg3::Segment2d& segment, bool& left_coincident, bool& right_coincident){
 
     cg3::Point2d p1 = segment.p1();
