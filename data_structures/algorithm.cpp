@@ -50,7 +50,7 @@ namespace Algorithm
          }
  //         printDag(dag);
  //         printNeigh(trapMap);
- //         validateNeighbors(trapMap);
+//          validateNeighbors(trapMap);
 
     }
     /**
@@ -62,7 +62,7 @@ namespace Algorithm
     DagNode* query(Dag& dag, const cg3::Segment2d& segment){
         DagNode* tmp = dag.getRoot();
         cg3::Point2d *p1, *q1;
-        cg3::Segment2d* s1;
+        cg3::Segment2d* s;
         cg3::Point2d queryPoint = segment.p1();
         double m_current_segment, m_new_segment;
 
@@ -72,7 +72,7 @@ namespace Algorithm
                     return tmp;
 
                 case DagNode::TypeNode::Left:
-                    p1 = (cg3::Point2d*)tmp->getData().objj;
+                    p1 = (cg3::Point2d*)tmp->getData().obj;
                     if ( queryPoint.x() >= p1->x()){
                         tmp = tmp->right;
                     }else{
@@ -81,7 +81,7 @@ namespace Algorithm
                     break;
 
                 case DagNode::TypeNode::Right:
-                    q1 = (cg3::Point2d*)tmp->getData().objj;
+                    q1 = (cg3::Point2d*)tmp->getData().obj;
                     if (queryPoint.x() >= q1->x()){
                         tmp = tmp->right;
                     }else{
@@ -90,14 +90,14 @@ namespace Algorithm
                     break;
 
                 case DagNode::TypeNode::Segment:
-                    s1 = (cg3::Segment2d*)tmp->getData().objj;
-                    if (Algorithm::pointIsAboveSegment(*s1,queryPoint)){
+                    s = (cg3::Segment2d*)tmp->getData().obj;
+                    if (Algorithm::pointIsAboveSegment(*s,queryPoint)){
                         tmp = tmp->left;
-                    }else if (cg3::isPointAtRight(*s1, queryPoint)){
+                    }else if (cg3::isPointAtRight(*s, queryPoint)){
                         tmp = tmp->right;
                     }
                     else{
-                        m_current_segment = (s1->p2().y() - s1->p1().y())/(s1->p2().x() - s1->p1().x());
+                        m_current_segment = (s->p2().y() - s->p1().y())/(s->p2().x() - s->p1().x());
                         m_new_segment = (segment.p2().y() - segment.p1().y())/(segment.p2().x() - segment.p1().x());
 
                         if (m_new_segment > m_current_segment){
@@ -120,10 +120,10 @@ namespace Algorithm
      * @return Vector of the trapezoids crossed by the segment
      */
     std::vector<Trapezoid*> followSegment(const cg3::Segment2d &segment, DagNode* trap){
-        Trapezoid *t = (Trapezoid*)trap->getData().objj;
+        Trapezoid *t = (Trapezoid*)trap->getData().obj;
         std::vector<Trapezoid*> trapezoids;
 
-        trapezoids.push_back((Trapezoid*)trap->getData().objj);
+        trapezoids.push_back((Trapezoid*)trap->getData().obj);
 
         // run until the second end-point is on the right with respect to the right point of the trapezoid
         while (segment.p2().x() > t->getRightPoint().x()) {
@@ -132,8 +132,8 @@ namespace Algorithm
                 trapezoids.push_back(t->getBottomRightNeigh());
                 t = t->getBottomRightNeigh();
             }else{
-                trapezoids.push_back(t->getUpperRightNeigh());
-                t = t->getUpperRightNeigh();
+                trapezoids.push_back(t->getTopRightNeigh());
+                t = t->getTopRightNeigh();
             }
         }
 
@@ -189,14 +189,14 @@ namespace Algorithm
             if (neig){
                 std::cout << "ID: " << t.getId() << std::endl;
 
-                if (t.getUpperLeftNeigh() != nullptr && t.getBottomLeftNeigh() != nullptr)
-                    std::cout << "U-L " << t.getUpperLeftNeigh()->getId() << " B-L " << t.getBottomLeftNeigh()->getId();
+                if (t.getTopLeftNeigh() != nullptr && t.getBottomLeftNeigh() != nullptr)
+                    std::cout << "U-L " << t.getTopLeftNeigh()->getId() << " B-L " << t.getBottomLeftNeigh()->getId();
                 else
                     std::cout << "U-L " << "NULL " << " B-L " << "NULL";
 
 
-                if (t.getUpperRightNeigh() != nullptr && t.getBottomRightNeigh() != nullptr)
-                    std::cout << " U-R " << t.getUpperRightNeigh()->getId() << " B-R " << t.getBottomRightNeigh()->getId() << std::endl;
+                if (t.getTopRightNeigh() != nullptr && t.getBottomRightNeigh() != nullptr)
+                    std::cout << " U-R " << t.getTopRightNeigh()->getId() << " B-R " << t.getBottomRightNeigh()->getId() << std::endl;
                 else
                     std::cout << " U-R " << "NULL" << " B-R " << "NULL" << std::endl;
             }
@@ -236,7 +236,7 @@ namespace Algorithm
                 std::cout << "S - " << tmp << std::endl;
                     break;
                 case DagNode::TypeNode::Trapezoid:
-                Trapezoid* t = (Trapezoid*)tmp->getData().objj;
+                Trapezoid* t = (Trapezoid*)tmp->getData().obj;
                     std::cout << "T" << t->getId() << " - " << tmp << std::endl;
                     break;
 
@@ -250,9 +250,9 @@ namespace Algorithm
         for (Trapezoid t: trapMap.getTrapezoids()){
 
             // validate left neighbors
-            if (t.getUpperLeftNeigh() != nullptr && t.getBottomLeftNeigh() != nullptr){
-                if (!trapMap.findID(*t.getUpperLeftNeigh())){
-                    std::cerr << "t: " << t.getId() << " U-L: " << t.getUpperLeftNeigh()->getId() << " -> NOT FOUND" << std::endl;
+            if (t.getTopLeftNeigh() != nullptr && t.getBottomLeftNeigh() != nullptr){
+                if (!trapMap.findID(*t.getTopLeftNeigh())){
+                    std::cerr << "t: " << t.getId() << " U-L: " << t.getTopLeftNeigh()->getId() << " -> NOT FOUND" << std::endl;
                 }
                 if (!trapMap.findID(*t.getBottomLeftNeigh())){
                     std::cerr << "t: " << t.getId() << "B-L: " << t.getBottomLeftNeigh()->getId() << " -> NOT FOUND" << std::endl;
@@ -260,35 +260,35 @@ namespace Algorithm
                 // controllo neighbors sx
                 if (t.sameLeftNeighbor()){
                     // t ha gli stessi left neighbors
-                    if (t.getUpperLeftNeigh()->sameRightNeighbor()){
+                    if (t.getTopLeftNeigh()->sameRightNeighbor()){
                         // left neighbor ha gli stessi right neighbors
 
-                        if (!(t.getUpperLeftNeigh()->getUpperRightNeigh()->getId() == t.getId()
-                                && t.getUpperLeftNeigh()->getBottomRightNeigh()->getId() == t.getId())){
-                            std::cerr << "ERRORE: " << t.getUpperLeftNeigh()->getId()<< "- current "<< t.getId() << " right neighbors errati!" << std::endl;
+                        if (!(t.getTopLeftNeigh()->getTopRightNeigh()->getId() == t.getId()
+                                && t.getTopLeftNeigh()->getBottomRightNeigh()->getId() == t.getId())){
+                            std::cerr << "ERRORE: " << t.getTopLeftNeigh()->getId()<< "- current "<< t.getId() << " right neighbors errati!" << std::endl;
                         }
                     }else{
                         // left neighobr ha diversi right neighbors
                         if (pointsAreEquals(t.getLeftPoint(), t.getSegmentDown().p1())){
                             // t è l'upper right neighbors di t.getupperleft
-                            if (t.getId() != t.getUpperLeftNeigh()->getUpperRightNeigh()->getId()){
-                                std::cerr << "ERRORE: " << t.getUpperLeftNeigh()->getId()<< "- current "<< t.getId() << " U-R errato!" << std::endl;
+                            if (t.getId() != t.getTopLeftNeigh()->getTopRightNeigh()->getId()){
+                                std::cerr << "ERRORE: " << t.getTopLeftNeigh()->getId()<< "- current "<< t.getId() << " U-R errato!" << std::endl;
                             }
                         }else{
                             // t è il bottom right neighbors di t.getupperleft
-                            if (t.getId() != t.getUpperLeftNeigh()->getBottomRightNeigh()->getId()){
-                                std::cerr << "ERRORE: " << t.getUpperLeftNeigh()->getId()<< "- current "<< t.getId() << " B-R errato!" << std::endl;
+                            if (t.getId() != t.getTopLeftNeigh()->getBottomRightNeigh()->getId()){
+                                std::cerr << "ERRORE: " << t.getTopLeftNeigh()->getId()<< "- current "<< t.getId() << " B-R errato!" << std::endl;
                             }
                         }
 
                     }
                 }else{
                     // t ha diversi left neighbors
-                    if (t.getUpperLeftNeigh()->getUpperRightNeigh()->getId() != t.getId() ||
-                            t.getUpperLeftNeigh()->getBottomRightNeigh()->getId() != t.getId()){
-                         std::cerr << "ERRORE: " << t.getUpperLeftNeigh()->getId() << "- current "<< t.getId() <<" U right errati!" << std::endl;
+                    if (t.getTopLeftNeigh()->getTopRightNeigh()->getId() != t.getId() ||
+                            t.getTopLeftNeigh()->getBottomRightNeigh()->getId() != t.getId()){
+                         std::cerr << "ERRORE: " << t.getTopLeftNeigh()->getId() << "- current "<< t.getId() <<" U right errati!" << std::endl;
                     }
-                    if (t.getBottomLeftNeigh()->getUpperRightNeigh()->getId() != t.getId() ||
+                    if (t.getBottomLeftNeigh()->getTopRightNeigh()->getId() != t.getId() ||
                             t.getBottomLeftNeigh()->getBottomRightNeigh()->getId() != t.getId()){
                          std::cerr << "ERRORE: " << t.getBottomLeftNeigh()->getId()<< "- current "<< t.getId() << " B right errati!" << std::endl;
                     }
@@ -299,9 +299,9 @@ namespace Algorithm
 //                std::cout << "trovato" << std::endl;
 
             // validate right neighbors
-            if (t.getUpperRightNeigh() != nullptr && t.getBottomRightNeigh() != nullptr){
-                if (!trapMap.findID(*t.getUpperRightNeigh())){
-                    std::cerr << "t: " << t.getId() << " U-L: " << t.getUpperRightNeigh()->getId() << " -> NOT FOUND" << std::endl;
+            if (t.getTopRightNeigh() != nullptr && t.getBottomRightNeigh() != nullptr){
+                if (!trapMap.findID(*t.getTopRightNeigh())){
+                    std::cerr << "t: " << t.getId() << " U-L: " << t.getTopRightNeigh()->getId() << " -> NOT FOUND" << std::endl;
                 }
                 if (!trapMap.findID(*t.getBottomRightNeigh())){
                     std::cerr << "t: " << t.getId() << "B-L: " << t.getBottomLeftNeigh()->getId() << " -> NOT FOUND" << std::endl;
@@ -309,35 +309,35 @@ namespace Algorithm
                 // controllo neighbors sx
                 if (t.sameRightNeighbor()){
                     // t ha gli stessi left neighbors
-                    if (t.getUpperRightNeigh()->sameLeftNeighbor()){
+                    if (t.getTopRightNeigh()->sameLeftNeighbor()){
                         // left neighbor ha gli stessi right neighbors
 
-                        if (!(t.getUpperRightNeigh()->getUpperLeftNeigh()->getId() == t.getId()
-                                && t.getUpperRightNeigh()->getBottomLeftNeigh()->getId() == t.getId())){
-                            std::cerr << "ERRORE: " << t.getUpperRightNeigh()->getId()<< "- current "<< t.getId() << " left neighbors errati!" << std::endl;
+                        if (!(t.getTopRightNeigh()->getTopLeftNeigh()->getId() == t.getId()
+                                && t.getTopRightNeigh()->getBottomLeftNeigh()->getId() == t.getId())){
+                            std::cerr << "ERRORE: " << t.getTopRightNeigh()->getId()<< "- current "<< t.getId() << " left neighbors errati!" << std::endl;
                         }
                     }else{
                         // left neighobr ha diversi right neighbors
                         if (pointsAreEquals(t.getRightPoint(), t.getSegmentDown().p2())){
                             // t è l'upper right neighbors di t.getupperleft
-                            if (t.getId() != t.getUpperRightNeigh()->getUpperLeftNeigh()->getId()){
-                                std::cerr << "ERRORE: " << t.getUpperRightNeigh()->getId()<< "- current "<< t.getId() << " U-L errato!" << std::endl;
+                            if (t.getId() != t.getTopRightNeigh()->getTopLeftNeigh()->getId()){
+                                std::cerr << "ERRORE: " << t.getTopRightNeigh()->getId()<< "- current "<< t.getId() << " U-L errato!" << std::endl;
                             }
                         }else{
                             // t è il bottom right neighbors di t.getupperleft
-                            if (t.getId() != t.getUpperRightNeigh()->getBottomLeftNeigh()->getId()){
-                                std::cerr << "ERRORE: " << t.getUpperRightNeigh()->getId()<< "- current "<< t.getId() << " B-L errato!" << std::endl;
+                            if (t.getId() != t.getTopRightNeigh()->getBottomLeftNeigh()->getId()){
+                                std::cerr << "ERRORE: " << t.getTopRightNeigh()->getId()<< "- current "<< t.getId() << " B-L errato!" << std::endl;
                             }
                         }
 
                     }
                 }else{
                     // t ha diversi left neighbors
-                    if (t.getUpperRightNeigh()->getUpperLeftNeigh()->getId() != t.getId() ||
-                            t.getUpperRightNeigh()->getBottomLeftNeigh()->getId() != t.getId()){
-                         std::cerr << "ERRORE: " << t.getUpperRightNeigh()->getId() << "- current "<< t.getId() <<" U left errati!" << std::endl;
+                    if (t.getTopRightNeigh()->getTopLeftNeigh()->getId() != t.getId() ||
+                            t.getTopRightNeigh()->getBottomLeftNeigh()->getId() != t.getId()){
+                         std::cerr << "ERRORE: " << t.getTopRightNeigh()->getId() << "- current "<< t.getId() <<" U left errati!" << std::endl;
                     }
-                    if (t.getBottomRightNeigh()->getUpperLeftNeigh()->getId() != t.getId() ||
+                    if (t.getBottomRightNeigh()->getTopLeftNeigh()->getId() != t.getId() ||
                             t.getBottomRightNeigh()->getBottomLeftNeigh()->getId() != t.getId()){
                          std::cerr << "ERRORE: " << t.getBottomRightNeigh()->getId()<< "- current "<< t.getId() << " B left errati!" << std::endl;
                     }

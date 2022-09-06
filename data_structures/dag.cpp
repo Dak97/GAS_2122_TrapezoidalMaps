@@ -41,7 +41,7 @@ DagNode* Dag::getRoot() const {
 void Dag::clearDag(){
     for(DagNode *n: nodes){
         if (n->getData().type != DagNode::TypeNode::Trapezoid){
-            free(n->getData().objj);
+            free(n->getData().obj);
             free(n);
         }
     }
@@ -65,7 +65,7 @@ void Dag::updateDagSingleSplit(std::vector<Trapezoid*>& traps, DagNode* trapNode
 
     if (!left_coincident && !right_coincident){
         data.type = DagNode::TypeNode::Left;
-        data.objj = new cg3::Point2d(p1);
+        data.obj = new cg3::Point2d(p1);
 
         tmp->setData(data);
 
@@ -98,7 +98,7 @@ void Dag::updateDagSingleSplit(std::vector<Trapezoid*>& traps, DagNode* trapNode
 
     }else if (left_coincident && right_coincident){
         data.type = DagNode::TypeNode::Segment;
-        data.objj = new cg3::Segment2d(p1, q1);
+        data.obj = new cg3::Segment2d(p1, q1);
         tmp->setData(data);
 
         tmp->left = new DagNode(DagNode::TypeNode::Trapezoid, traps.at(0));
@@ -110,7 +110,7 @@ void Dag::updateDagSingleSplit(std::vector<Trapezoid*>& traps, DagNode* trapNode
         nodes.push_back(tmp->right);
     }else if (left_coincident){
         data.type = DagNode::TypeNode::Right;
-        data.objj = new cg3::Point2d(q1);
+        data.obj = new cg3::Point2d(q1);
         tmp->setData(data);
 
         tmp->right = new DagNode(DagNode::TypeNode::Trapezoid, traps.at(2));
@@ -132,7 +132,7 @@ void Dag::updateDagSingleSplit(std::vector<Trapezoid*>& traps, DagNode* trapNode
 
     }else {
         data.type = DagNode::TypeNode::Left;
-        data.objj = new cg3::Point2d(p1);
+        data.obj = new cg3::Point2d(p1);
         tmp->setData(data);
 
         tmp->left = new DagNode(DagNode::TypeNode::Trapezoid, traps.at(0));
@@ -164,11 +164,11 @@ void Dag::updateDagMultipleSplit(std::vector<Trapezoid*>& newTraps, std::vector<
         nodeToSubstitute = trapsToDelete[i]->getRefToDag();
 
         if (i == 0){
-            oldTrap = (Trapezoid*)nodeToSubstitute->getData().objj;
+            oldTrap = (Trapezoid*)nodeToSubstitute->getData().obj;
 
             if (!left_coincident){
                 data.type = DagNode::TypeNode::Left;
-                data.objj = new cg3::Point2d(segment.p1());
+                data.obj = new cg3::Point2d(segment.p1());
                 nodeToSubstitute->setData(data);
 
 
@@ -201,7 +201,7 @@ void Dag::updateDagMultipleSplit(std::vector<Trapezoid*>& newTraps, std::vector<
             }else{
                 // left coincident
                 data.type = DagNode::TypeNode::Segment;
-                data.objj = new cg3::Segment2d(segment);
+                data.obj = new cg3::Segment2d(segment);
                 nodeToSubstitute->setData(data);
 
                 if (Algorithm::pointIsAboveSegment(segment, oldTrap->getRightPoint())){
@@ -227,11 +227,11 @@ void Dag::updateDagMultipleSplit(std::vector<Trapezoid*>& newTraps, std::vector<
                 }
             }
         }else if (i < trapsToDelete.size() -1 ){
-            oldTrap = (Trapezoid*)nodeToSubstitute->getData().objj;
+            oldTrap = (Trapezoid*)nodeToSubstitute->getData().obj;
 
             // creo il nodo segmento
             data.type = DagNode::TypeNode::Segment;
-            data.objj = new cg3::Segment2d(segment);
+            data.obj = new cg3::Segment2d(segment);
             nodeToSubstitute->setData(data);
 
             if (Algorithm::pointIsAboveSegment(segment, oldTrap->getLeftPoint())){
@@ -277,11 +277,11 @@ void Dag::updateDagMultipleSplit(std::vector<Trapezoid*>& newTraps, std::vector<
             }
         }
         else{
-            oldTrap = (Trapezoid*)nodeToSubstitute->getData().objj;
+            oldTrap = (Trapezoid*)nodeToSubstitute->getData().obj;
 
             if (!right_coincident){
                 data.type = DagNode::TypeNode::Right;
-                data.objj = new cg3::Point2d(segment.p2());
+                data.obj = new cg3::Point2d(segment.p2());
                 nodeToSubstitute->setData(data);
 
                 nodeToSubstitute->right = new DagNode(DagNode::TypeNode::Trapezoid, newTraps.back());
@@ -308,7 +308,7 @@ void Dag::updateDagMultipleSplit(std::vector<Trapezoid*>& newTraps, std::vector<
             }else{
                 //right coincident
                 data.type = DagNode::TypeNode::Segment;
-                data.objj = new cg3::Segment2d(segment);
+                data.obj = new cg3::Segment2d(segment);
                 nodeToSubstitute->setData(data);
 
                 if (Algorithm::pointIsAboveSegment(segment, oldTrap->getLeftPoint())){

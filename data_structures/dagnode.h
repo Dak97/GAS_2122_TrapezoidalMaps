@@ -7,11 +7,11 @@ class DagNode
 
 public:
 
-    enum TypeNode{ Left, Right, Segment, Trapezoid};
+    enum TypeNode{ Left, Right, Segment, Trapezoid}; // type of object
 
     typedef struct {
-        TypeNode type; // tipo di oggetto che contiene il nodo
-        void *objj; // puntatore all'oggetto
+        TypeNode type; // type of the object
+        void *obj; // reference to the object
     }DagData;
 
     DagNode(DagNode::TypeNode type, void *objj);
@@ -20,11 +20,11 @@ public:
     void setData(const DagData &newData);
     void setObject(void* obj);
 
-    DagNode *left; // punta al figlio sinistro
-    DagNode *right; // punta al figlio destro
-    DagNode *parent; // punta al nodo padre
+    DagNode *left; // pointer to the left node
+    DagNode *right; // pointer to the right node
+//    DagNode *parent; // punta al nodo padre
 private:
-    DagData data; // contiene i dato del nodo della DAG
+    DagData data; // conteiner of the data
 
 };
 

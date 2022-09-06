@@ -51,6 +51,5 @@ double DrawableTrapMap::sceneRadius() const
     return boundingBox.diag();
 }
 void DrawableTrapMap::highlightTrapezoid(Trapezoid* t) const{
-
     t->setHighlighted(true);
 }

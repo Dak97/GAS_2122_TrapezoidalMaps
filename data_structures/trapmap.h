@@ -19,11 +19,13 @@ public:
     void splitInThreeLeft(Trapezoid *a, Trapezoid *b, Trapezoid *c_1, std::vector<Trapezoid*>& low, std::vector<Trapezoid*>& up,
                       Trapezoid& bb,  const cg3::Segment2d& segment, int id, bool& right_above_segment);
     void splitInThreeRight(Trapezoid *b, Trapezoid *c_1, std::vector<Trapezoid*>& low, std::vector<Trapezoid*>& up,
-                      Trapezoid& bb,  const cg3::Segment2d& segment, int id);
+                      Trapezoid& bb,  const cg3::Segment2d& segment, int id, bool& left_above_segment);
     void assignNeighborsLeftSplit(Trapezoid t, Trapezoid *left_t, Trapezoid *no_merge_t, Trapezoid *merge_t, bool& left_coincident, bool& right_above_segment);
     void assignNeighborsRightSplit(Trapezoid t, Trapezoid *right, Trapezoid *no_merge_right_t, std::vector<Trapezoid*> &up_merging,
-                                   std::vector<Trapezoid*> &low_merging, const cg3::Segment2d segment, bool& right_coincident);
-
+                                   std::vector<Trapezoid*> &low_merging, bool& right_coincident, bool& left_above_segment);
+    void splitInTwo(Trapezoid t,  std::vector<Trapezoid*>& up_merging, std::vector<Trapezoid*>& low_merging, Trapezoid *mirror_merge_t,
+                             std::vector<Trapezoid*>& newTrapsToReturnconst, const cg3::Segment2d& segment, bool& right_above_segment,
+                    bool& left_above_segment);
     const std::list<Trapezoid> getTrapezoids() const;
 
     Trapezoid* getFirstTrapezoid();
@@ -37,15 +39,12 @@ public:
     bool findID(Trapezoid t);
 private:
 
-    Trapezoid boundingBox;
-    // vettore di trapezoidi
     std::list<Trapezoid> trapezoids;
 
     std::string prev;
 
     cg3::Point2d findIntersectionVerticalLine(const cg3::Segment2d& s, const cg3::Point2d& px);
-//    bool pointIsAboveSegment(cg3::Segment2d segment, cg3::Point2d point);
-//    void updateNeigh(Trapezoid *a, Trapezoid *b, const cg3::Segment2d& s);
+
 
 };
 

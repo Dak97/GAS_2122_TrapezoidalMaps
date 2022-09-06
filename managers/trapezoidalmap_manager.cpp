@@ -204,7 +204,7 @@ void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& seg
 //    if (segment.p1().x() == -935504 ){
 //        std::cout << "trovato" << std::endl;
 //    }
-//    std::cout << segment.p1().x() << " " <<segment.p1().y() << " " << segment.p2().x() << " " <<segment.p2().y() << std::endl;
+    std::cout << segment.p1().x() << " " <<segment.p1().y() << " " << segment.p2().x() << " " <<segment.p2().y() << std::endl;
     Algorithm::buildTrapMapDag(dag, drawableTrapMap, segment);
 
 //    Algorithm::printDag(dag);
@@ -256,7 +256,7 @@ void TrapezoidalMapManager::queryTrapezoidalMap(const cg3::Point2d& queryPoint)
 
     //#####################################################################
 
-//    drawableTrapMap.compareNeigh();
+    drawableTrapMap.compareNeigh();
     if (prevHighLighted != nullptr){
 
         prevHighLighted->setHighlighted(false);
@@ -273,10 +273,10 @@ void TrapezoidalMapManager::queryTrapezoidalMap(const cg3::Point2d& queryPoint)
     DagNode* p = Algorithm::query(dag, cg3::Segment2d(queryPoint, queryPoint));
 
     if (p->getData().type == DagNode::TypeNode::Trapezoid){
-        Trapezoid* t = (Trapezoid*)p->getData().objj;
+        Trapezoid* t = (Trapezoid*)p->getData().obj;
         std::cout << t->getId() << " Trapezoide Querato!" << std::endl;
-        std::cout << ((t->getUpperLeftNeigh() != nullptr) ? t->getUpperLeftNeigh()->getId() : 0) << " - " << ((t->getBottomLeftNeigh()!=nullptr) ? t->getBottomLeftNeigh()->getId() : 0);
-        std::cout << " - " << ((t->getUpperRightNeigh()!=nullptr) ? t->getUpperRightNeigh()->getId() : 0) << " - " << ((t->getBottomRightNeigh()!=nullptr)?t->getBottomRightNeigh()->getId() : 0) << std::endl;
+        std::cout << ((t->getTopLeftNeigh() != nullptr) ? t->getTopLeftNeigh()->getId() : 0) << " - " << ((t->getBottomLeftNeigh()!=nullptr) ? t->getBottomLeftNeigh()->getId() : 0);
+        std::cout << " - " << ((t->getTopRightNeigh()!=nullptr) ? t->getTopRightNeigh()->getId() : 0) << " - " << ((t->getBottomRightNeigh()!=nullptr)?t->getBottomRightNeigh()->getId() : 0) << std::endl;
 
 //        Algorithm::printNeigh(drawableTrapMap);
 

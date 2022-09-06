@@ -22,11 +22,9 @@ public:
               Trapezoid* bottomLeftN, Trapezoid* upperRightN, Trapezoid* bottomRightN,
               const cg3::Color color);
 
-    // setter e getter del segmento alto del trapezoide
     const cg3::Segment2d &getSegmentUp() const;
     void setSegmentUp(const cg3::Segment2d &newSegmentUp);
 
-    // setter e getter del segmento basso del trapezoide
     const cg3::Segment2d &getSegmentDown() const;
     void setSegmentDown(const cg3::Segment2d &newSegmentDown);
 
@@ -42,14 +40,14 @@ public:
     int getId() const;
     void setId(int newId);
 
-    Trapezoid *getUpperLeftNeigh() const;
-    void setUpperLeftNeigh(Trapezoid *newUpperLeftNeigh);
+    Trapezoid *getTopLeftNeigh() const;
+    void setTopLeftNeigh(Trapezoid *newUpperLeftNeigh);
 
     Trapezoid *getBottomLeftNeigh() const;
     void setBottomLeftNeigh(Trapezoid *newBottomLeftNeigh);
 
-    Trapezoid *getUpperRightNeigh() const;
-    void setUpperRightNeigh(Trapezoid *newUpperRightNeigh);
+    Trapezoid *getTopRightNeigh() const;
+    void setTopRightNeigh(Trapezoid *newUpperRightNeigh);
 
     Trapezoid *getBottomRightNeigh() const;
     void setBottomRightNeigh(Trapezoid *newBottomRightNeigh);
@@ -83,15 +81,16 @@ private:
     cg3::Point2d leftPoint;
     cg3::Point2d rightPoint;
 
-    Trapezoid* upperLeftNeigh;
+    Trapezoid* topLeftNeigh;
     Trapezoid* bottomLeftNeigh;
-    Trapezoid* upperRightNeigh;
+    Trapezoid* topRightNeigh;
     Trapezoid* bottomRightNeigh;
+
     cg3::Color color;
     bool highlighted;
 
-    DagNode* refToDag;
-    std::list<Trapezoid>::iterator refToIter;
+    DagNode* refToDag; // reference to the DAG node
+    std::list<Trapezoid>::iterator refToIter; // reference to the iterator list
 
 };
 
