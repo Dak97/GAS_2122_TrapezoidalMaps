@@ -1,13 +1,12 @@
 #include "drawabletrapmap.h"
-#include "data_structures/algorithm.h"
-DrawableTrapMap::DrawableTrapMap(double boundingBox) :
-    TrapMap(),
-    bb(boundingBox)
+#include "algorithms/algorithm.h"
+DrawableTrapezoidalMap::DrawableTrapezoidalMap() :
+    TrapezoidalMap()
 {
     srand(time(NULL));
 }
 
-void DrawableTrapMap::draw() const
+void DrawableTrapezoidalMap::draw() const
 {
 
         for (const Trapezoid& t : getTrapezoids()) {
@@ -17,7 +16,7 @@ void DrawableTrapMap::draw() const
                             t.getSegmentUp().p2(),
                             t.getSegmentDown().p2(),
                             ((t.getHighlighted()) ? cg3::Color(31,12,92) : t.getColor()),
-                            1, ((t.getHighlighted())? true : false));
+                            1, true);
             }
             else if (Algorithm::pointsAreEquals(t.getSegmentDown().p2(), t.getSegmentUp().p2())){
                 cg3::opengl::drawTriangle2(
@@ -25,7 +24,7 @@ void DrawableTrapMap::draw() const
                             t.getSegmentUp().p1(),
                             t.getSegmentDown().p2(),
                             ((t.getHighlighted()) ? cg3::Color(31,12,92) : t.getColor()),
-                            1, ((t.getHighlighted())? true : false));
+                            1, true);
             }else{
                 cg3::opengl::drawQuad2(
                             t.getSegmentDown().p2(),
@@ -33,23 +32,23 @@ void DrawableTrapMap::draw() const
                             t.getSegmentUp().p1(),
                             t.getSegmentUp().p2(),
                             ((t.getHighlighted()) ? cg3::Color(31,12,92) : t.getColor()),
-                            1, ((t.getHighlighted())? true : false));
+                            1, true);
             }
         }
 
 }
 
-cg3::Point3d DrawableTrapMap::sceneCenter() const
+cg3::Point3d DrawableTrapezoidalMap::sceneCenter() const
 {
     const cg3::BoundingBox2& boundingBox = cg3::BoundingBox2();
     return cg3::Point3d(boundingBox.center().x(), boundingBox.center().y(), 0);
 }
 
-double DrawableTrapMap::sceneRadius() const
+double DrawableTrapezoidalMap::sceneRadius() const
 {
     const cg3::BoundingBox2& boundingBox = cg3::BoundingBox2();
     return boundingBox.diag();
 }
-void DrawableTrapMap::highlightTrapezoid(Trapezoid* t) const{
+void DrawableTrapezoidalMap::highlightTrapezoid(Trapezoid* t) const{
     t->setHighlighted(true);
 }

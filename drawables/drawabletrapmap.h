@@ -1,7 +1,7 @@
 #ifndef DRAWABLETRAPMAP_H
 #define DRAWABLETRAPMAP_H
 
-#include "data_structures/trapmap.h"
+#include "data_structures/trapezoidalmap.h"
 
 #include <cg3/viewer/interfaces/drawable_object.h>
 
@@ -11,19 +11,16 @@
 
 #include <cg3/utilities/color.h>
 
-class DrawableTrapMap : public TrapMap, public cg3::DrawableObject
+class DrawableTrapezoidalMap : public TrapezoidalMap, public cg3::DrawableObject
 {
 public:
 
-    DrawableTrapMap(double boundingBox);
+    DrawableTrapezoidalMap();
 
-    // metodi da implementare dell'interfaccia drawableobject
     void draw() const;
     cg3::Point3d sceneCenter() const;
     double sceneRadius() const;
     void highlightTrapezoid(Trapezoid* t) const;
-
-    const double bb;
 
 
 };

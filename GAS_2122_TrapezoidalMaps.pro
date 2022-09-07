@@ -40,13 +40,13 @@ DISTFILES += \
     LICENSE
 
 SOURCES +=  \
-    data_structures/algorithm.cpp \
+    algorithms/algorithm.cpp \
     data_structures/dag.cpp \
     data_structures/dagnode.cpp \
     data_structures/segment_intersection_checker.cpp \
     data_structures/trapezoid.cpp \
+    data_structures/trapezoidalmap.cpp \
     data_structures/trapezoidalmap_dataset.cpp \
-    data_structures/trapmap.cpp \
     drawables/drawable_trapezoidalmap_dataset.cpp \
     drawables/drawabletrapmap.cpp \
     main.cpp \
@@ -57,13 +57,13 @@ FORMS += \
     managers/trapezoidalmapmanager.ui
 
 HEADERS += \
-    data_structures/algorithm.h \
+    algorithms/algorithm.h \
     data_structures/dag.h \
     data_structures/dagnode.h \
     data_structures/segment_intersection_checker.h \
     data_structures/trapezoid.h \
+    data_structures/trapezoidalmap.h \
     data_structures/trapezoidalmap_dataset.h \
-    data_structures/trapmap.h \
     drawables/drawable_trapezoidalmap_dataset.h \
     drawables/drawabletrapmap.h \
     managers/trapezoidalmap_manager.h \

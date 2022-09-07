@@ -13,7 +13,7 @@
 #include "drawables/drawable_trapezoidalmap_dataset.h"
 #include "data_structures/dag.h"
 #include "drawables/drawabletrapmap.h"
-#include "data_structures/algorithm.h"
+#include "algorithms/algorithm.h"
 
 namespace Ui {
     class TrapezoidalMapManager;
@@ -60,7 +60,7 @@ private:
     //---------------------------------------------------------------------
     //Declare your attributes here
 
-    DrawableTrapMap drawableTrapMap;
+    DrawableTrapezoidalMap drawableTrapMap;
     Dag dag;
     Trapezoid* prevHighLighted;
 

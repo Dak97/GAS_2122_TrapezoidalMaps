@@ -1,11 +1,11 @@
-#include "trapmap.h"
+#include "trapezoidalmap.h"
 
 #include <cg3/viewer/opengl_objects/opengl_objects2.h>
-#include "algorithm.h"
+#include "algorithms/algorithm.h"
 /**
  * @brief TrapMap::TrapMap Default constructor of the trapezoidal map object
  */
-TrapMap::TrapMap()
+TrapezoidalMap::TrapezoidalMap()
 {
     // initializie trapezoidal map
     init();
@@ -13,7 +13,7 @@ TrapMap::TrapMap()
 /**
  * @brief TrapMap::init Add the default trapezoid (corrisponding to the bounding box) to the trapezoidal map
  */
-void TrapMap::init(){
+void TrapezoidalMap::init(){
     addNewTrapezoid();
 }
 
@@ -21,7 +21,7 @@ void TrapMap::init(){
  * @brief TrapMap::getTrapezoids Return the list of the trapezoids in the trapezoidal map
  * @return List of the trapezoids
  */
-const std::list<Trapezoid> TrapMap::getTrapezoids() const{
+const std::list<Trapezoid> TrapezoidalMap::getTrapezoids() const{
     return trapezoids;
 }
 
@@ -29,7 +29,7 @@ const std::list<Trapezoid> TrapMap::getTrapezoids() const{
  * @brief TrapMap::getFirstTrapezoid Return the first trapezoid in the list of the trapezoids
  * @return The first trapezoid
  */
-Trapezoid* TrapMap::getFirstTrapezoid(){
+Trapezoid* TrapezoidalMap::getFirstTrapezoid(){
     std::list<Trapezoid>::iterator it=trapezoids.begin();
     return &*it;
 }
@@ -38,7 +38,7 @@ Trapezoid* TrapMap::getFirstTrapezoid(){
  * @brief TrapMap::deleteTrapezoidByRef Elimination of the trapezoids in the list of the trapezoids
  * @param traps List of the trapezoids that have to be deleted
  */
-void TrapMap::deleteTrapezoidByRef(std::vector<Trapezoid*> traps){
+void TrapezoidalMap::deleteTrapezoidByRef(std::vector<Trapezoid*> traps){
     for (const Trapezoid* t : traps){
         trapezoids.erase(t->getRefToIter());
     }
@@ -46,7 +46,7 @@ void TrapMap::deleteTrapezoidByRef(std::vector<Trapezoid*> traps){
 /**
  * @brief TrapMap::clear Elimination of the entire list of the trapezoids
  */
-void TrapMap::clear(){
+void TrapezoidalMap::clear(){
     trapezoids.clear();
 }
 
@@ -54,7 +54,7 @@ void TrapMap::clear(){
   * @brief TrapMap::addNewTrapezoid Insertion of a default trapezoid in the list of trapezoids
   * @return The new trapezoid inserted
   */
- Trapezoid* TrapMap::addNewTrapezoid(){
+ Trapezoid* TrapezoidalMap::addNewTrapezoid(){
     // add a default trapezoid to the list
     trapezoids.push_back(Trapezoid());
 
@@ -69,7 +69,7 @@ void TrapMap::clear(){
  * @param px x point coordinate
  * @return The point intersected
  */
-cg3::Point2d TrapMap::findIntersectionVerticalLine(const cg3::Segment2d& s, const cg3::Point2d& px){
+cg3::Point2d TrapezoidalMap::findIntersectionVerticalLine(const cg3::Segment2d& s, const cg3::Point2d& px){
 
     double a, b, c, y;
 
@@ -89,7 +89,7 @@ cg3::Point2d TrapMap::findIntersectionVerticalLine(const cg3::Segment2d& s, cons
  * @param right_coincident flag if the segment is right coincident
  * @return A vector of the new trapezoids
  */
-std::vector<Trapezoid*> TrapMap::newTrapezoidsSingleSplit(const cg3::Segment2d& segment,  Trapezoid* bb1, bool &left_coincident, bool &right_coincident){
+std::vector<Trapezoid*> TrapezoidalMap::newTrapezoidsSingleSplit(const cg3::Segment2d& segment,  Trapezoid* bb1, bool &left_coincident, bool &right_coincident){
     cg3::Segment2d topS, bottomS;
     cg3::Point2d leftP, rightP, p1, q1;
     cg3::Color colorT;
@@ -572,7 +572,7 @@ std::vector<Trapezoid*> TrapMap::newTrapezoidsSingleSplit(const cg3::Segment2d& 
  * @param segment the segment inserted
  * @param id last trapezoid id
  */
-void TrapMap::splitInThreeRight(Trapezoid *d, Trapezoid *e, std::vector<Trapezoid*>& low, std::vector<Trapezoid*>& up,
+void TrapezoidalMap::splitInThreeRight(Trapezoid *d, Trapezoid *e, std::vector<Trapezoid*>& low, std::vector<Trapezoid*>& up,
                        Trapezoid& bb,  const cg3::Segment2d& segment, int id, bool& left_above_segment){
     cg3::Point2d p1, q1;
     cg3::Color colorT;
@@ -662,7 +662,7 @@ void TrapMap::splitInThreeRight(Trapezoid *d, Trapezoid *e, std::vector<Trapezoi
  * @param id last rtapezoid id
  * @param right_above_segment flag if the segment is above the current right point
  */
-void TrapMap::splitInThreeLeft(Trapezoid *a, Trapezoid *b, Trapezoid *c_1, std::vector<Trapezoid*>& low, std::vector<Trapezoid*>& up,
+void TrapezoidalMap::splitInThreeLeft(Trapezoid *a, Trapezoid *b, Trapezoid *c_1, std::vector<Trapezoid*>& low, std::vector<Trapezoid*>& up,
                          Trapezoid& bb, const cg3::Segment2d& segment, int id, bool& right_above_segment){
     cg3::Point2d p1, q1;
     cg3::Color colorT;
@@ -755,7 +755,7 @@ void TrapMap::splitInThreeLeft(Trapezoid *a, Trapezoid *b, Trapezoid *c_1, std::
  * @param right_above_segment flag if the right point is above the segment
  * @param left_above_segment flag if the left point is above the segment
  */
-void TrapMap::splitInTwo(Trapezoid t,  std::vector<Trapezoid*>& up_merging, std::vector<Trapezoid*>& low_merging, Trapezoid *mirror_merge_t,
+void TrapezoidalMap::splitInTwo(Trapezoid t,  std::vector<Trapezoid*>& up_merging, std::vector<Trapezoid*>& low_merging, Trapezoid *mirror_merge_t,
                          std::vector<Trapezoid*>& newTrapsToReturn, const cg3::Segment2d& segment, bool& right_above_segment, bool& left_above_segment){
     int idLastTrap;
     cg3::Color colorT;
@@ -929,7 +929,7 @@ void TrapMap::splitInTwo(Trapezoid t,  std::vector<Trapezoid*>& up_merging, std:
  * @param left_coincident flag if is left coincident
  * @param right_above_segment flag if the right point is above the segment
  */
-void TrapMap::assignNeighborsLeftSplit(Trapezoid t, Trapezoid *left_t, Trapezoid *no_merge_t, Trapezoid *merge_t,
+void TrapezoidalMap::assignNeighborsLeftSplit(Trapezoid t, Trapezoid *left_t, Trapezoid *no_merge_t, Trapezoid *merge_t,
                                        bool& left_coincident, bool& right_above_segment){
     //////////////////////
     // NEIGHBOR SETTING //
@@ -1149,7 +1149,7 @@ void TrapMap::assignNeighborsLeftSplit(Trapezoid t, Trapezoid *left_t, Trapezoid
  * @param segment segment inserted
  * @param right_coincident flag if is right coincident
  */
-void TrapMap::assignNeighborsRightSplit(Trapezoid t, Trapezoid *right, Trapezoid *no_merge_right_t, std::vector<Trapezoid*>& up_merging,
+void TrapezoidalMap::assignNeighborsRightSplit(Trapezoid t, Trapezoid *right, Trapezoid *no_merge_right_t, std::vector<Trapezoid*>& up_merging,
                                         std::vector<Trapezoid*>& low_merging, bool& right_coincident, bool& left_above_segment){
     //////////////////////
     // NEIGHBOR SETTING //
@@ -1486,7 +1486,7 @@ void TrapMap::assignNeighborsRightSplit(Trapezoid t, Trapezoid *right, Trapezoid
  * @param right_coincident flag if is right coincident
  * @return
  */
-std::vector<Trapezoid*> TrapMap::newTrapezoidsMultipleSplit(const cg3::Segment2d& segment,  std::vector<Trapezoid*>& traps,
+std::vector<Trapezoid*> TrapezoidalMap::newTrapezoidsMultipleSplit(const cg3::Segment2d& segment,  std::vector<Trapezoid*>& traps,
                                                             bool &left_coincident, bool &right_coincident){
     cg3::Point2d p1, q1;
     Trapezoid t;
@@ -1562,7 +1562,7 @@ std::vector<Trapezoid*> TrapMap::newTrapezoidsMultipleSplit(const cg3::Segment2d
     return newTrapsToReturn;
 }
 
-bool TrapMap::findID(Trapezoid t){
+bool TrapezoidalMap::findID(Trapezoid t){
     for (Trapezoid t1 : trapezoids){
         if (t.getId() == t1.getId())
             return true;
@@ -1570,7 +1570,7 @@ bool TrapMap::findID(Trapezoid t){
 
     return false;
 }
-void TrapMap::compareNeigh(){
+void TrapezoidalMap::compareNeigh(){
     bool neig = true;
     const Trapezoid tr;
     std::string s;

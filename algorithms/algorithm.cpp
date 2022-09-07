@@ -8,7 +8,7 @@ namespace Algorithm
      * @param trapMap trapezoidal map data structure
      * @param segment segment that has to be inserted
      */
-    void buildTrapMapDag(Dag& dag, TrapMap& trapMap, const cg3::Segment2d& segment){
+    void buildTrapMapDag(Dag& dag, TrapezoidalMap& trapMap, const cg3::Segment2d& segment){
         cg3::Segment2d segment_oriented = segment;
         DagNode* trapNodeQuery;
         std::vector<Trapezoid*> trapsCrossed, trapsCreated;
@@ -182,7 +182,7 @@ namespace Algorithm
             return false;
     }
 
-    void printNeigh(TrapMap trapMap){
+    void printNeigh(TrapezoidalMap trapMap){
         bool neig = true, points = false;
         std::string s;
         for (Trapezoid t : trapMap.getTrapezoids()){
@@ -245,7 +245,7 @@ namespace Algorithm
         }
 
     }
-    void validateNeighbors(TrapMap trapMap){
+    void validateNeighbors(TrapezoidalMap trapMap){
 //        std::cout << "Validazione in corso..." << std::endl;
         for (Trapezoid t: trapMap.getTrapezoids()){
 

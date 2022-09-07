@@ -14,14 +14,6 @@ class Trapezoid {
 public:
     Trapezoid();
 
-    Trapezoid(int id, cg3::Segment2d segmentUp, cg3::Segment2d segmentDown,
-                         cg3::Point2d leftP, cg3::Point2d rightP, const cg3::Color color);
-
-    Trapezoid(int id, cg3::Segment2d &segmentUp, cg3::Segment2d &segmentDown,
-              cg3::Point2d& leftP, cg3::Point2d& rightP, Trapezoid* upperLeftN,
-              Trapezoid* bottomLeftN, Trapezoid* upperRightN, Trapezoid* bottomRightN,
-              const cg3::Color color);
-
     const cg3::Segment2d &getSegmentUp() const;
     void setSegmentUp(const cg3::Segment2d &newSegmentUp);
 

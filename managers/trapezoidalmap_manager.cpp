@@ -37,7 +37,7 @@ TrapezoidalMapManager::TrapezoidalMapManager(QWidget *parent) :
     firstPointSelectedColor(220, 80, 80),
     firstPointSelectedSize(5),
     isFirstPointSelected(false),
-    drawableTrapMap(BOUNDINGBOX),
+    drawableTrapMap(),
     dag(drawableTrapMap.getFirstTrapezoid()),
     prevHighLighted(nullptr)
 {
@@ -201,9 +201,6 @@ void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& seg
     //structures, you could save directly the point (Point2d) in each trapezoid (it is fine).
 
     prevHighLighted = nullptr;
-//    if (segment.p1().x() == -935504 ){
-//        std::cout << "trovato" << std::endl;
-//    }
     std::cout << segment.p1().x() << " " <<segment.p1().y() << " " << segment.p2().x() << " " <<segment.p2().y() << std::endl;
     Algorithm::buildTrapMapDag(dag, drawableTrapMap, segment);
 
@@ -256,19 +253,10 @@ void TrapezoidalMapManager::queryTrapezoidalMap(const cg3::Point2d& queryPoint)
 
     //#####################################################################
 
-    drawableTrapMap.compareNeigh();
-    if (prevHighLighted != nullptr){
-
+//    drawableTrapMap.compareNeigh();
+    if (prevHighLighted != nullptr)
         prevHighLighted->setHighlighted(false);
-//        if (prevHighLighted->getUpperLeftNeigh() != nullptr)
-//            prevHighLighted->getUpperLeftNeigh()->setHighlighted(false);
-//        if (prevHighLighted->getBottomLeftNeigh() != nullptr)
-//            prevHighLighted->getBottomLeftNeigh()->setHighlighted(false);
-//        if (prevHighLighted->getUpperRightNeigh() != nullptr)
-//            prevHighLighted->getUpperRightNeigh()->setHighlighted(false);
-//        if (prevHighLighted->getBottomRightNeigh() != nullptr)
-//            prevHighLighted->getBottomRightNeigh()->setHighlighted(false);
-    }
+
 
     DagNode* p = Algorithm::query(dag, cg3::Segment2d(queryPoint, queryPoint));
 
@@ -280,19 +268,9 @@ void TrapezoidalMapManager::queryTrapezoidalMap(const cg3::Point2d& queryPoint)
 
 //        Algorithm::printNeigh(drawableTrapMap);
 
-
         prevHighLighted = t;
 
         drawableTrapMap.highlightTrapezoid(t);
-
-//        if (prevHighLighted->getUpperLeftNeigh() != nullptr)
-//            drawableTrapMap.highlightTrapezoid(t->getUpperLeftNeigh());
-//        if (prevHighLighted->getBottomLeftNeigh() != nullptr)
-//            drawableTrapMap.highlightTrapezoid(t->getBottomLeftNeigh());
-//        if (prevHighLighted->getUpperRightNeigh() != nullptr)
-//             drawableTrapMap.highlightTrapezoid(t->getUpperRightNeigh());
-//        if (prevHighLighted->getBottomRightNeigh() != nullptr)
-//            drawableTrapMap.highlightTrapezoid(t->getBottomRightNeigh());
     }else{
         std::cout << "Errore: Il tipo non è un Trapezoide\n";
     }

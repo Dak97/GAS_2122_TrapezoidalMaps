@@ -1,7 +1,7 @@
 #include "trapezoid.h"
-#include "algorithm.h"
+#include "algorithms/algorithm.h"
 /**
- * @brief Trapezoid::Trapezoid Default constructor of the trapezoid object (it id the bounding box)
+ * @brief Trapezoid::Trapezoid Default constructor of the trapezoid object (it is the bounding box)
  */
 Trapezoid::Trapezoid(){
     id = 0;
@@ -16,59 +16,6 @@ Trapezoid::Trapezoid(){
     topRightNeigh = nullptr;
     bottomRightNeigh = nullptr;
     refToDag = nullptr;
-}
-/**
- * @brief Trapezoid::Trapezoid Constructor of the trapezoid
- * @param id trapezoid id
- * @param segmentUp segment up of the trapezoid
- * @param segmentDown segment down of the trapezoid
- * @param leftP left point of the trapezoid
- * @param rightP right point of the trapezoid
- * @param color trapezoid color
- */
-Trapezoid::Trapezoid(int id, cg3::Segment2d segmentUp, cg3::Segment2d segmentDown,
-                     cg3::Point2d leftP, cg3::Point2d rightP, const cg3::Color color) :
-    id(id),
-    segmentUp(segmentUp),
-    segmentDown(segmentDown),
-    leftPoint(leftP),
-    rightPoint(rightP),
-    color(color),
-    highlighted(false)
-
-{
-}
-/**
- * @brief Trapezoid::Trapezoid Constructor of the trapezoid
- * @param id trapezoid id
- * @param segmentUp segment up of the trapezoid
- * @param segmentDown segment down of the trapezoid
- * @param leftP left point of the trapezoid
- * @param rightP right point of the trapezoid
- * @param upperLeftN top left neighbor
- * @param bottomLeftN bottom left neighbor
- * @param upperRightN top right neighbor
- * @param bottomRightN bottom right neighbor
- * @param color trapezoid color
- */
-Trapezoid::Trapezoid(int id, cg3::Segment2d &segmentUp, cg3::Segment2d &segmentDown,
-                     cg3::Point2d& leftP, cg3::Point2d& rightP, Trapezoid* upperLeftN,
-                     Trapezoid* bottomLeftN, Trapezoid* upperRightN, Trapezoid* bottomRightN,
-                     const cg3::Color color) :
-    id(id),
-    segmentUp(segmentUp),
-    segmentDown(segmentDown),
-    leftPoint(leftP),
-    rightPoint(rightP),
-    topLeftNeigh(upperLeftN),
-    bottomLeftNeigh(bottomLeftN),
-    topRightNeigh(upperRightN),
-    bottomRightNeigh(bottomRightN),
-    color(color),
-    highlighted(false)
-
-{
-
 }
 /**
  * @brief Trapezoid::getSegmentUp return segment up

@@ -1,5 +1,5 @@
-#ifndef TRAPMAP_H
-#define TRAPMAP_H
+#ifndef TRAPEZOIDALMAP_H
+#define TRAPEZOIDALMAP_H
 
 #include <cg3/geometry/segment2.h>
 #include <cg3/geometry/point2.h>
@@ -7,10 +7,10 @@
 #include "data_structures/dagnode.h"
 #include <cg3/utilities/color.h>
 //#include "algoritms/algoritms.h"
-class TrapMap
+class TrapezoidalMap
 {
 public:
-    TrapMap();
+    TrapezoidalMap();
 
     std::vector<Trapezoid*> newTrapezoidsSingleSplit(const cg3::Segment2d &segment, Trapezoid* bb,
                                                      bool &left_coincident, bool &right_coincident);
@@ -48,4 +48,4 @@ private:
 
 };
 
-#endif // TRAPMAP_H
+#endif // TRAPEZOIDALMAP_H

@@ -10,7 +10,6 @@ DagNode::DagNode(DagNode::TypeNode type, void *objj)
     data.obj = objj;
     left = nullptr;
     right = nullptr;
-//    parent = nullptr;
 }
 /**
  * @brief DagNode::~DagNode Default deconstructor
