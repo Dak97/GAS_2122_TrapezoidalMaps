@@ -201,7 +201,7 @@ void TrapezoidalMapManager::addSegmentToTrapezoidalMap(const cg3::Segment2d& seg
     //structures, you could save directly the point (Point2d) in each trapezoid (it is fine).
 
     prevHighLighted = nullptr;
-    std::cout << segment.p1().x() << " " <<segment.p1().y() << " " << segment.p2().x() << " " <<segment.p2().y() << std::endl;
+//    std::cout << segment.p1().x() << " " <<segment.p1().y() << " " << segment.p2().x() << " " <<segment.p2().y() << std::endl;
     Algorithm::buildTrapMapDag(dag, drawableTrapMap, segment);
 
 //    Algorithm::printDag(dag);

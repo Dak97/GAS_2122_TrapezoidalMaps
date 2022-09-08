@@ -1,7 +1,8 @@
 #include "trapezoidalmap.h"
-
 #include <cg3/viewer/opengl_objects/opengl_objects2.h>
 #include "algorithms/algorithm.h"
+#define COLOR_BASE 30
+#define COLOR_MAX 225
 /**
  * @brief TrapMap::TrapMap Default constructor of the trapezoidal map object
  */
@@ -123,7 +124,7 @@ std::vector<Trapezoid*> TrapezoidalMap::newTrapezoidsSingleSplit(const cg3::Segm
     // LEFT trapezoid //
     ////////////////////
     if (!left_coincident){
-        colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+        colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
         left->setTrapezoid(++idLastTrap,
                            cg3::Segment2d(bb.getSegmentUp().p1(),findIntersectionVerticalLine(bb.getSegmentUp(), p1)),
                            cg3::Segment2d(bb.getSegmentDown().p1(),findIntersectionVerticalLine(bb.getSegmentDown(), p1)),
@@ -135,7 +136,7 @@ std::vector<Trapezoid*> TrapezoidalMap::newTrapezoidsSingleSplit(const cg3::Segm
     ////////////////////
     // TOP trapezoid  //
     ////////////////////
-    colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+    colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
     top->setTrapezoid(++idLastTrap,
                       cg3::Segment2d(findIntersectionVerticalLine(bb.getSegmentUp(), p1),findIntersectionVerticalLine(bb.getSegmentUp(), q1)),
                       segment,
@@ -146,7 +147,7 @@ std::vector<Trapezoid*> TrapezoidalMap::newTrapezoidsSingleSplit(const cg3::Segm
     // BOTTOM trapezoid //
     //////////////////////
 
-    colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+    colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
 
     bottom->setTrapezoid(++idLastTrap,
                          segment,
@@ -159,7 +160,7 @@ std::vector<Trapezoid*> TrapezoidalMap::newTrapezoidsSingleSplit(const cg3::Segm
     /////////////////////
 
     if (!right_coincident){
-        colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+        colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
         right->setTrapezoid(++idLastTrap,
                             cg3::Segment2d(findIntersectionVerticalLine(bb.getSegmentUp(), q1), bb.getSegmentUp().p2()),
                             cg3::Segment2d(findIntersectionVerticalLine(bb.getSegmentDown(), q1), bb.getSegmentDown().p2()),
@@ -590,13 +591,13 @@ void TrapezoidalMap::splitInThreeRight(Trapezoid *d, Trapezoid *e, std::vector<T
             low.back()->setSegmentDown(cg3::Segment2d(low.back()->getSegmentDown().p1(), findIntersectionVerticalLine(bb.getSegmentDown(),q1)));
             low.back()->setRightPoint(q1);
 
-            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
             d->setTrapezoid(++idLastTrap,
                             cg3::Segment2d(bb.getSegmentUp().p1(),findIntersectionVerticalLine(bb.getSegmentUp(), q1)),
                             cg3::Segment2d(findIntersectionVerticalLine(segment, bb.getLeftPoint()), q1),
                             bb.getLeftPoint(), q1, colorT);
 
-            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
             e->setTrapezoid(++idLastTrap,
                             cg3::Segment2d(d->getSegmentUp().p2(), bb.getSegmentUp().p2()),
                             cg3::Segment2d(findIntersectionVerticalLine(bb.getSegmentDown(), q1), bb.getSegmentDown().p2()),
@@ -608,13 +609,13 @@ void TrapezoidalMap::splitInThreeRight(Trapezoid *d, Trapezoid *e, std::vector<T
             up.back()->setSegmentDown(cg3::Segment2d(up.back()->getSegmentDown().p1(), q1));
             up.back()->setRightPoint(q1);
 
-            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
             d->setTrapezoid(++idLastTrap,
                             cg3::Segment2d(findIntersectionVerticalLine(segment, bb.getLeftPoint()),q1),
                             cg3::Segment2d(bb.getSegmentDown().p1(),findIntersectionVerticalLine(bb.getSegmentDown(), q1)),
                             bb.getLeftPoint(), q1, colorT);
 
-            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
             e->setTrapezoid(++idLastTrap,
                             cg3::Segment2d(findIntersectionVerticalLine(bb.getSegmentUp(), q1), bb.getSegmentUp().p2()),
                             cg3::Segment2d(d->getSegmentDown().p2(), bb.getSegmentDown().p2()),
@@ -629,7 +630,7 @@ void TrapezoidalMap::splitInThreeRight(Trapezoid *d, Trapezoid *e, std::vector<T
             low.back()->setSegmentDown(cg3::Segment2d(low.back()->getSegmentDown().p1(), bb.getSegmentDown().p2()));
             low.back()->setRightPoint(q1);
 
-            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
             d->setTrapezoid(++idLastTrap,
                             cg3::Segment2d(bb.getSegmentUp().p1(),findIntersectionVerticalLine(bb.getSegmentUp(), q1)),
                             cg3::Segment2d(findIntersectionVerticalLine(segment, bb.getLeftPoint()), q1),
@@ -641,7 +642,7 @@ void TrapezoidalMap::splitInThreeRight(Trapezoid *d, Trapezoid *e, std::vector<T
             up.back()->setSegmentDown(cg3::Segment2d(up.back()->getSegmentDown().p1(), q1));
             up.back()->setRightPoint(q1);
 
-            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
             d->setTrapezoid(++idLastTrap,
                             cg3::Segment2d(findIntersectionVerticalLine(segment, bb.getLeftPoint()),q1),
                             cg3::Segment2d(bb.getSegmentDown().p1(),findIntersectionVerticalLine(bb.getSegmentDown(), q1)),
@@ -674,21 +675,21 @@ void TrapezoidalMap::splitInThreeLeft(Trapezoid *a, Trapezoid *b, Trapezoid *c_1
 
     if (a != nullptr){
         // segment is not left coincident
-        colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+        colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
         a->setTrapezoid(++idLastTrap,
                         cg3::Segment2d(bb.getSegmentUp().p1(),findIntersectionVerticalLine(bb.getSegmentUp(),p1)),
                         cg3::Segment2d(bb.getSegmentDown().p1(),findIntersectionVerticalLine(bb.getSegmentDown(),p1)),
                         bb.getLeftPoint(), p1, colorT);
 
         if (right_above_segment){
-            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
             b->setTrapezoid(++idLastTrap,
                             cg3::Segment2d(a->getSegmentUp().p2(), findIntersectionVerticalLine(bb.getSegmentUp(), bb.getRightPoint())),
                             cg3::Segment2d(p1,findIntersectionVerticalLine(segment, bb.getRightPoint())),
                             p1, bb.getRightPoint(), colorT);
             up.push_back(b);
 
-            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
             c_1->setTrapezoid(++idLastTrap,
                               cg3::Segment2d(p1, b->getSegmentDown().p2()),
                               cg3::Segment2d(a->getSegmentDown().p2(), bb.getSegmentDown().p2()),
@@ -696,14 +697,14 @@ void TrapezoidalMap::splitInThreeLeft(Trapezoid *a, Trapezoid *b, Trapezoid *c_1
 
             low.push_back(c_1);
         }else{
-            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
             b->setTrapezoid(++idLastTrap,
                             cg3::Segment2d(p1,findIntersectionVerticalLine(segment,bb.getRightPoint())),
                             cg3::Segment2d(a->getSegmentDown().p2(),bb.getSegmentDown().p2()),
                             p1, bb.getRightPoint(), colorT);
             low.push_back(b);
 
-            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
             c_1->setTrapezoid(++idLastTrap,
                               cg3::Segment2d(a->getSegmentUp().p2(), bb.getSegmentUp().p2()),
                               cg3::Segment2d(p1, b->getSegmentUp().p2()),
@@ -713,14 +714,14 @@ void TrapezoidalMap::splitInThreeLeft(Trapezoid *a, Trapezoid *b, Trapezoid *c_1
     }else{
         // segment is left coincident
         if (right_above_segment){
-            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
             b->setTrapezoid(++idLastTrap,
                            bb.getSegmentUp(),
                             cg3::Segment2d(p1,findIntersectionVerticalLine(segment, bb.getRightPoint())),
                             p1, bb.getRightPoint(), colorT);
             up.push_back(b);
 
-            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
             c_1->setTrapezoid(++idLastTrap,
                               cg3::Segment2d(p1, b->getSegmentDown().p2()),
                               cg3::Segment2d(bb.getSegmentDown().p1(), bb.getSegmentDown().p2()),
@@ -728,13 +729,13 @@ void TrapezoidalMap::splitInThreeLeft(Trapezoid *a, Trapezoid *b, Trapezoid *c_1
 
             low.push_back(c_1);
         }else{
-            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
             b->setTrapezoid(++idLastTrap,
                             cg3::Segment2d(p1,findIntersectionVerticalLine(segment,bb.getRightPoint())),
                             bb.getSegmentDown(),
                             p1, bb.getRightPoint(), colorT);
             low.push_back(b);
-            colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+            colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
             c_1->setTrapezoid(++idLastTrap,
                               cg3::Segment2d(bb.getSegmentUp().p1(), bb.getSegmentUp().p2()),
                               cg3::Segment2d(p1, b->getSegmentUp().p2()),
@@ -819,7 +820,7 @@ void TrapezoidalMap::splitInTwo(Trapezoid t,  std::vector<Trapezoid*>& up_mergin
 
     // NOT MERGING TRAPEZOID
     idLastTrap = trapezoids.back().getId();
-    colorT = cg3::Color(rand()%256, rand()%256, rand()%256);
+    colorT = cg3::Color(rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE, rand()%COLOR_MAX+COLOR_BASE);
     if (left_above_segment){
         mirror_merge_t = addNewTrapezoid();
         mirror_merge_t->setTrapezoid(++idLastTrap,

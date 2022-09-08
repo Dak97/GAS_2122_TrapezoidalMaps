@@ -1,7 +1,6 @@
 #include "drawabletrapmap.h"
 #include "algorithms/algorithm.h"
-DrawableTrapezoidalMap::DrawableTrapezoidalMap() :
-    TrapezoidalMap()
+DrawableTrapezoidalMap::DrawableTrapezoidalMap()
 {
     srand(time(NULL));
 }
@@ -15,7 +14,7 @@ void DrawableTrapezoidalMap::draw() const
                             t.getSegmentDown().p1(),
                             t.getSegmentUp().p2(),
                             t.getSegmentDown().p2(),
-                            ((t.getHighlighted()) ? cg3::Color(31,12,92) : t.getColor()),
+                            ((t.getHighlighted()) ? cg3::Color(10,10,10) : t.getColor()),
                             1, true);
             }
             else if (Algorithm::pointsAreEquals(t.getSegmentDown().p2(), t.getSegmentUp().p2())){
@@ -23,7 +22,7 @@ void DrawableTrapezoidalMap::draw() const
                             t.getSegmentDown().p1(),
                             t.getSegmentUp().p1(),
                             t.getSegmentDown().p2(),
-                            ((t.getHighlighted()) ? cg3::Color(31,12,92) : t.getColor()),
+                            ((t.getHighlighted()) ? cg3::Color(10,10,10) : t.getColor()),
                             1, true);
             }else{
                 cg3::opengl::drawQuad2(
@@ -31,7 +30,7 @@ void DrawableTrapezoidalMap::draw() const
                             t.getSegmentDown().p1(),
                             t.getSegmentUp().p1(),
                             t.getSegmentUp().p2(),
-                            ((t.getHighlighted()) ? cg3::Color(31,12,92) : t.getColor()),
+                            ((t.getHighlighted()) ? cg3::Color(10,10,10) : t.getColor()),
                             1, true);
             }
         }

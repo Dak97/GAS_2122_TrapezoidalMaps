@@ -106,7 +106,6 @@ size_t TrapezoidalMapDataset::addSegment(const cg3::Segment2d& segment, bool& se
                 segmentMap.insert(std::make_pair(indexedSegment, id));
 
                 intersectionChecker.insert(orderedSegment);
-                std::cout << segmentMap.size() << std::endl;
             }
         }
     }
