@@ -35,16 +35,11 @@ public:
     void init();
     void clear();
 
-    void compareNeigh();
-    bool findID(Trapezoid t);
 private:
 
     std::list<Trapezoid> trapezoids;
 
-    std::string prev;
-
     cg3::Point2d findIntersectionVerticalLine(const cg3::Segment2d& s, const cg3::Point2d& px);
-
 
 };
 

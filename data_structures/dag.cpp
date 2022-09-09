@@ -157,7 +157,7 @@ void Dag::updateDagSingleSplit(std::vector<Trapezoid*>& traps, DagNode* trapNode
     }
 }
 void Dag::updateDagMultipleSplit(std::vector<Trapezoid*>& newTraps, std::vector<Trapezoid*>& trapsToDelete, const cg3::Segment2d& segment, bool& left_coincident, bool& right_coincident){
-    DagNode *nodeToSubstitute, *tmp, *trapShared;
+    DagNode *nodeToSubstitute, *tmp, *trapShared = nullptr;
     int j=0;
     DagNode::DagData data;
     Trapezoid *oldTrap;

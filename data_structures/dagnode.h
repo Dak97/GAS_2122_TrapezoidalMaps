@@ -22,7 +22,6 @@ public:
 
     DagNode *left; // pointer to the left node
     DagNode *right; // pointer to the right node
-//    DagNode *parent; // punta al nodo padre
 private:
     DagData data; // conteiner of the data
 
